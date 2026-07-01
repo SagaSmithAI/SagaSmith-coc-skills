@@ -29,13 +29,25 @@ sagasmith-coc module ingest --campaign <id> --path "<scenario.pdf>" --json
 ## Investigators
 
 ```powershell
-sagasmith-coc investigator create --campaign <id> --name "<name>" --player "<player>" --sheet '<json>' --json
+sagasmith-coc investigator create --campaign <id> --name "<name>" --player "<player>" --sheet '@<sheet.json>' --json
 sagasmith-coc investigator list --campaign <id> --json
 sagasmith-coc investigator show --id <id> --json
-sagasmith-coc investigator update --id <id> --sheet '<json>' --json
+sagasmith-coc investigator update --id <id> --sheet '@<sheet.json>' --json
 ```
 
 Persist only after player confirmation.
+
+Validate a complete draft before creation:
+
+```powershell
+sagasmith-coc investigator validate --sheet '@<sheet.json>' --json
+```
+
+The sheet retains characteristics, HP/MP/SAN/Luck, SAN limits and daily loss,
+MOV, DB/Build, Dodge, skills, weapons, conditions, occupation/archetype,
+development pools, biography, sanity encounters, inventory/books, money,
+backstory, Mythos, and Pulp talents. Do not discard unknown campaign-approved
+fields during updates.
 
 ## Saves and Continuity
 
