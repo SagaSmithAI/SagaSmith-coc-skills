@@ -14,32 +14,26 @@
 2. Read world/party/investigator/combat/plot/scene state from database.
 3. Read current module scene (no pre-reading future content).
 4. Ask investigator action. Only roll when uncertainty exists.
-5. Call engine for dice/mechanical resolution:
-   - `roll_d100()` for basic d100
-   - `resolve_skill_check()` for skill tests
-   - `resolve_sanity_loss()` for sanity checks
-   - `resolve_melee/ranged_attack()` for combat
-   - `resolve_chase_speed_check()` for chases
-   - `resolve_skill_development()` for improvement
+5. Call `sagasmith-coc --json` for dice and mechanical resolution.
 6. Write results to database with audit logging.
 7. Output narration, results, choices; create snapshot at major milestones.
 
-## Tool Usage Conventions
+## CLI Usage Conventions
 
-| Tool | When to Use |
+| Command Group | When to Use |
 |------|-------------|
-| `coc7_campaign` | Create/list/start campaigns |
-| `coc7_save` | Snapshot save/load/verify |
-| `coc7_character` | Investigator/NPC CRUD, faction relations |
-| `coc7_rules` | Rule lookups and citations |
-| `coc7_memory` | Long-term campaign memory search |
-| `coc7_module` | Module import, search, scene tracker |
+| `campaign` | Create/list/start campaigns |
+| `save` | Snapshot save/load/verify |
+| `investigator` | Investigator/NPC CRUD |
+| `rules` | Rule lookups and citations |
+| `memory` | Long-term campaign memory search |
+| `module` | Scenario import, search, scene tracker |
 
 ## Memory Management
 
-- Major discoveries and promises → `coc7_save create` (triggers memory recording)
-- Quick continuity questions → `coc7_memory search`
-- NPC attitude changes → `coc7_character npc_attitude`
+- Major discoveries and promises → `save create` plus `memory add`
+- Quick continuity questions → `memory search`
+- NPC changes → `investigator update`
 
 ## Group Chat Etiquette
 
