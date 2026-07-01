@@ -7,6 +7,10 @@ description: "Manage CoC 7e campaigns, investigators, scenarios, saves, and memo
 
 All commands include `--json`.
 
+Read `../coc7-keeper/references/KEEPER_RULES.md` before mutating an active
+investigation. Keep player assignments in campaign state; platform profile files
+are projections, not authority.
+
 ## Start
 
 ```powershell
@@ -45,3 +49,6 @@ sagasmith-coc memory search --campaign <id> --query "<question>" --limit 8 --jso
 ```
 
 Restore creates a new history branch and never overwrites old saves.
+
+Use `save regenerate-recap`, `memory scope`, and `state undo`/`state redo` when
+needed. Undo affects audited mutations and does not delete immutable snapshots.
