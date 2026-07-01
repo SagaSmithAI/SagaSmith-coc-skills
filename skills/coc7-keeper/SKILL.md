@@ -15,6 +15,10 @@ sagasmith-coc campaign show --campaign <id> --json
 
 Retain the selected campaign ID and ruleset.
 
+Before play, read `references/KEEPER_RULES.md`. Load
+`references/INVESTIGATOR_CREATION.md` for creation or development and
+`references/KEEPER_TEMPLATES.md` when structured scene/state output is needed.
+
 ## Keeper Turn
 
 1. Read only the current scene and player-visible discoveries.
@@ -59,3 +63,7 @@ sagasmith-coc event add --campaign <id> --type discovery --summary "<event>" --p
 sagasmith-coc memory add --campaign <id> --type clue --subject "<subject>" --content "<fact>" --json
 sagasmith-coc save create --campaign <id> --label "<decision point>" --json
 ```
+
+Record chronology in events and durable, branch-scoped facts in memory. Save
+before dangerous choices, bouts, major revelations, chapter transitions, and
+restores. Verify a snapshot before restore and refresh all state afterward.
