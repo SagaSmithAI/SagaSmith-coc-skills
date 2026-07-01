@@ -18,6 +18,8 @@ Retain the selected campaign ID and ruleset.
 Before play, read `references/KEEPER_RULES.md`. Load
 `references/INVESTIGATOR_CREATION.md` for creation or development and
 `references/KEEPER_TEMPLATES.md` when structured scene/state output is needed.
+Load `references/COMBAT_CHASE.md`, `references/SANITY.md`, or
+`references/INVESTIGATION.md` when that subsystem becomes active.
 
 ## Keeper Turn
 
@@ -46,15 +48,18 @@ returned from the user's imported sources.
 ```powershell
 sagasmith-coc roll d100 --bonus-dice 1 --json
 sagasmith-coc check skill --threshold 65 --difficulty hard --json
+sagasmith-coc check opposed --payload '@<opposed-check.json>' --json
 sagasmith-coc sanity loss --current-san 70 --san-max 99 --loss 5 --source "<horror>" --json
 sagasmith-coc sanity bout --json
-sagasmith-coc combat melee --threshold 60 --payload '{"weapon_damage":"1D6","damage_bonus":"1D4"}' --json
-sagasmith-coc combat ranged --threshold 55 --expression "1D10" --payload '{"range_band":"normal"}' --json
+sagasmith-coc combat melee --threshold 60 --payload '@<melee.json>' --json
+sagasmith-coc combat ranged --threshold 55 --expression "1D10" --payload '@<ranged.json>' --json
 sagasmith-coc chase speed --mov 8 --json
 sagasmith-coc development skill --current-value 55 --json
 ```
 
 Use `--pulp` only when the campaign profile enables Pulp rules.
+Never calculate an opposed melee defense from a placeholder: provide the
+defender roll, threshold, and `defense` choice in the melee payload.
 
 ## Persistence
 
