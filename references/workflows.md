@@ -8,6 +8,14 @@
 4. retrieve the current scenario scene
 5. retrieve recent clues and memory
 
+## Scenario import
+
+1. module inspect
+2. apply the `SCENARIO_INDEX.md` quality gates
+3. module ingest
+4. module index
+5. verify scene types, visibility, page ranges, handouts, and solo transitions
+
 ## Rule adjudication
 
 1. rules search

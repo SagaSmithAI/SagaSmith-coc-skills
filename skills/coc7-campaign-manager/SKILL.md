@@ -24,7 +24,13 @@ Import user-owned rules or scenarios:
 sagasmith-coc rules ingest --path "<rulebook.pdf>" --publication "<title>" --locale zh --json
 sagasmith-coc module inspect --path "<scenario.pdf>" --json
 sagasmith-coc module ingest --campaign <id> --path "<scenario.pdf>" --json
+sagasmith-coc module index --campaign <id> --json
 ```
+
+Inspect before ingest. Read
+`../coc7-keeper/references/SCENARIO_INDEX.md` and stop automatic setup when its
+quality gates fail. After ingest, verify scene types, page ranges, handouts, and
+solo-node transitions through `module index`.
 
 ## Investigators
 

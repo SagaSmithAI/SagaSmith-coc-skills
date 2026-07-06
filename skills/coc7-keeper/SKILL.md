@@ -20,22 +20,28 @@ Before play, read `references/KEEPER_RULES.md`. Load
 `references/KEEPER_TEMPLATES.md` when structured scene/state output is needed.
 Load `references/COMBAT_CHASE.md`, `references/SANITY.md`, or
 `references/INVESTIGATION.md` when that subsystem becomes active.
+Load `references/SCENARIO_INDEX.md` when importing, validating, or navigating a
+scenario, handout pack, or solo adventure.
 
 ## Keeper Turn
 
-1. Read only the current scene and player-visible discoveries.
-2. Clarify investigator intent.
-3. Retrieve a rule when adjudication is uncertain.
-4. Roll d100 openly and resolve the success level.
-5. Apply SAN, combat, chase, or development through the CLI.
-6. Narrate consequences without revealing hidden scenario information.
-7. Record durable clues, relationships, events, and saves.
+1. Resolve the acting scope (`party`, `group:<id>`, or `player:<id>`) and call
+   `module current`; player scopes inherit the party scene until they diverge.
+2. Read only that scope's current scene and player-visible discoveries.
+3. Clarify investigator intent.
+4. Retrieve a rule when adjudication is uncertain.
+5. Roll d100 openly and resolve the success level.
+6. Apply SAN, combat, chase, or development through the CLI.
+7. Narrate consequences without revealing hidden scenario information.
+8. Merge clues, handouts, and triggers into that scope's existing progress.
+9. Record durable clues, relationships, events, and saves.
 
 ## Rules and Scenario Retrieval
 
 ```powershell
 sagasmith-coc rules search --campaign <id> --query "<question>" --limit 5 --json
 sagasmith-coc rules expand --chunk <chunk-id> --json
+sagasmith-coc module current --campaign <id> --scope <scope> --json
 sagasmith-coc module search --campaign <id> --query "<situation>" --limit 5 --json
 sagasmith-coc module read-scene --campaign <id> --scene <scene-id> --json
 ```
