@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Standalone TTRPG runtime — zero pip dependencies, file-based persistence.
+"""CoC 7e Standalone runtime — zero pip dependencies, file-based persistence.
 
 Usage:
     python tools/portable.py doctor
-    python tools/portable.py campaign start --name "Campaign" [--edition 2024]
+    python tools/portable.py campaign start --name "Campaign"
     python tools/portable.py campaign list
     python tools/portable.py campaign get --campaign <id>
-    python tools/portable.py character create --campaign <id> --name "Aragorn" [--sheet '{"hp":10}']
+    python tools/portable.py character create --campaign <id> --name "Herbert" [--sheet '{"str":50}']
     python tools/portable.py character list --campaign <id>
-    python tools/portable.py character get --campaign <id> --name "Aragorn"
+    python tools/portable.py character get --campaign <id> --name "Herbert"
     python tools/portable.py module ingest --campaign <id> --path <file.md> [--title "Module"]
     python tools/portable.py module index --campaign <id>
     python tools/portable.py module current --campaign <id> [--scope party]
@@ -16,15 +16,14 @@ Usage:
     python tools/portable.py module search --campaign <id> --query "<text>"
     python tools/portable.py module set-progress --campaign <id> --scene <scene-id> [--scope party] [--progress 50] [--room "Room"] [--state '{}'] [--status current]
     python tools/portable.py rules search --campaign <id> --query "<text>"
-    python tools/portable.py roll dice --expression "2d6+3"
-    python tools/portable.py roll check --dc 15 --score 16 [--advantage] [--proficient] [--level 5]
-    python tools/portable.py roll attack --dc 17 --score 18 [--proficient] [--level 5]
-    python tools/portable.py event add --campaign <id> --type combat --summary "Fought orcs" [--payload '{}']
+    python tools/portable.py roll d100 --score 65
+    python tools/portable.py roll dice --expression "1D6"
+    python tools/portable.py event add --campaign <id> --type clue --summary "Found letter" [--payload '{}']
     python tools/portable.py event list --campaign <id>
-    python tools/portable.py memory add --campaign <id> --type fact --subject "Key" --content "The key is under the mat"
+    python tools/portable.py memory add --campaign <id> --type clue --subject "Key" --content "The key is under the mat"
     python tools/portable.py memory list --campaign <id>
     python tools/portable.py memory search --campaign <id> --query "<text>"
-    python tools/portable.py save create --campaign <id> --label "Before boss"
+    python tools/portable.py save create --campaign <id> --label "Before the ritual"
     python tools/portable.py save list --campaign <id>
     python tools/portable.py save restore --campaign <id> --slot <slot>
 """
@@ -490,39 +489,6 @@ def cmd_roll_dice(args: argparse.Namespace) -> dict[str, Any]:
     return {"expression": expr, "total": total, "details": details}
 
 
-def cmd_roll_check(args: argparse.Namespace) -> dict[str, Any]:
-    import random
-    roll = random.randint(1, 20)
-    if args.advantage:
-        roll2 = random.randint(1, 20)
-        roll = max(roll, roll2)
-    elif args.disadvantage:
-        roll2 = random.randint(1, 20)
-        roll = min(roll, roll2)
-    bonus = args.score or 0
-    if args.proficient:
-        bonus += 2 + (args.level or 1) // 4
-    result = roll + bonus
-    return {
-        "roll": roll, "bonus": bonus, "total": result,
-        "dc": args.dc, "success": result >= (args.dc or 10),
-        "advantage": bool(args.advantage), "disadvantage": bool(args.disadvantage),
-    }
-
-
-def cmd_roll_attack(args: argparse.Namespace) -> dict[str, Any]:
-    import random
-    roll = random.randint(1, 20)
-    bonus = args.score or 0
-    if args.proficient:
-        bonus += 2 + (args.level or 1) // 4
-    result = roll + bonus
-    return {
-        "roll": roll, "bonus": bonus, "total": result,
-        "ac": args.dc, "hit": result >= (args.dc or 10),
-    }
-
-
 def cmd_roll_d100(args: argparse.Namespace) -> dict[str, Any]:
     import random
     roll = random.randint(1, 100)
@@ -720,18 +686,6 @@ def _parser() -> argparse.ArgumentParser:
     rlsub = rlp.add_subparsers(dest="action", required=True)
     rd = rlsub.add_parser("dice")
     rd.add_argument("--expression", required=True)
-    rc = rlsub.add_parser("check")
-    rc.add_argument("--dc", type=int, default=10)
-    rc.add_argument("--score", type=int)
-    rc.add_argument("--advantage", action="store_true")
-    rc.add_argument("--disadvantage", action="store_true")
-    rc.add_argument("--proficient", action="store_true")
-    rc.add_argument("--level", type=int)
-    ra = rlsub.add_parser("attack")
-    ra.add_argument("--dc", type=int, default=10)
-    ra.add_argument("--score", type=int)
-    ra.add_argument("--proficient", action="store_true")
-    ra.add_argument("--level", type=int)
     rd100 = rlsub.add_parser("d100")
     rd100.add_argument("--score", type=int, default=50)
     # event
@@ -769,7 +723,7 @@ def _parser() -> argparse.ArgumentParser:
     svr.add_argument("--campaign", required=True)
     svr.add_argument("--slot", type=int, required=True)
 
-    for subp in [mcur, mrs, msr, msp, mindex, mi, ch_create, ch_list, ch_get, cp_get, ea, el, ma, ml, mms, svc, svl, svr, rp, rs, cp_start]:
+    for subp in [mcur, mrs, msr, msp, mindex, mi, ch_create, ch_list, ch_get, cp_get, ea, el, ma, ml, mms, svc, svl, svr, rp, rs, cp_start, rd, rd100]:
         subp.add_argument("--json", action="store_true", default=True)
 
     return p
@@ -791,8 +745,6 @@ CMD_MAP: dict[str, dict[str, Any]] = {
     ("module", "set-progress"): cmd_module_set_progress,
     ("rules", "search"): cmd_rules_search,
     ("roll", "dice"): cmd_roll_dice,
-    ("roll", "check"): cmd_roll_check,
-    ("roll", "attack"): cmd_roll_attack,
     ("roll", "d100"): cmd_roll_d100,
     ("event", "add"): cmd_event_add,
     ("event", "list"): cmd_event_list,
