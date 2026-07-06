@@ -6,7 +6,7 @@
 
 **Cross-platform Call of Cthulhu 7e Keeper Skills** — provide Game Master capabilities to Claude Code, NanoBot, Codex, Cursor, OpenClaw, Hermes, and any agent platform supporting the SKILL.md standard.
 
-This repository is a **SKILL definition package** — it contains no database, game engine, or platform-specific tools. It ships two variants, and your agent should **auto-select** based on the local environment:
+This repository is a **SKILL definition package** — it contains no database, game engine, or platform-specific tools. It ships two variants — **you choose** which to install:
 
 | Variant | Directory | Dependency | When to use |
 |---------|-----------|------------|-------------|

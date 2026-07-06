@@ -6,7 +6,7 @@
 
 **跨平台 Call of Cthulhu 7e Keeper Skills** — 为 Claude Code、NanoBot、Codex、Cursor、OpenClaw、Hermes 等所有支持 SKILL.md 标准的 AI Agent 平台提供守秘人能力。
 
-本仓库是一个 **SKILL 定义包**，不包含数据库、游戏引擎或平台专属工具。它提供两种使用方式，Agent 请根据本机环境**自动选择**：
+本仓库是一个 **SKILL 定义包**，不包含数据库、游戏引擎或平台专属工具。它提供两种使用方式，**由你选择**：
 
 | 方式 | 目录 | 依赖 | 适用场景 |
 |------|------|------|---------|
