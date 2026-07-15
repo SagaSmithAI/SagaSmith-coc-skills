@@ -1,15 +1,14 @@
-# 🪶 SagaSmith CoC Skills — Standalone
+# SagaSmith CoC Skills — Standalone
 
-**零依赖轻量版。** 无需安装 `sagasmith-coc` Python 包，Python 标准库即可运行。
-
-所有命令在 `standalone/` 目录下执行：
+**Python 标准库便携模式。** 用于无 Full runtime 环境的演示、快速调查与文件状态。
 
 ```powershell
+cd standalone
 python portable.py doctor
 python portable.py campaign start --name "Arkham"
 python portable.py roll d100 --score 65
 ```
 
-数据存 `~/.sagasmith/`。不支持 PDF 导入、FTS5 检索、ChromaDB。
+加载 [`SKILL.md`](SKILL.md)。数据默认位于 `~/.sagasmith/`。
 
-详见 `SKILL.md`。
+Standalone 不解析 PDF，不提供 FTS5/ChromaDB、完整 SAN/战斗引擎、认证 principal 或 Core 级分支保证。它的写入不会同步到 Full runtime；Agent 切换前必须明确说明能力差异。
