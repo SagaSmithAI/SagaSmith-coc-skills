@@ -56,4 +56,4 @@ Data lives at `~/.sagasmith/`. There is no PDF ingestion, FTS5, ChromaDB, or Ful
 
 ## License
 
-Original Skill content is MIT licensed. Call of Cthulhu and commercial material belong to their respective rights holders and are not included.
+Original Skill content is licensed under Apache-2.0. Call of Cthulhu and commercial material belong to their respective rights holders and are not included.

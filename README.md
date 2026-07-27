@@ -56,4 +56,4 @@ python portable.py roll d100 --score 65
 
 ## License
 
-原创 Skill 内容使用 MIT License。Call of Cthulhu 及商业内容归各自权利人所有，不包含在本仓库中。
+原创 Skill 内容使用 Apache-2.0。Call of Cthulhu 及商业内容归各自权利人所有，不包含在本仓库中。
