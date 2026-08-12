@@ -156,7 +156,13 @@ Never move phase, start Chase, or start Combat while a conversation is active.
 6. Run the next legal native call to prove recovery.
 
 For alternatives, create a snapshot, branch_change create from the intended
-parent, checkout with guards, and keep sibling random streams/state isolated.
+parent, refresh the campaign revision returned by branch creation even when it
+does not checkout, then checkout with guards and keep sibling random
+streams/state isolated.
+
+Mixed continuity commits that include events, facts, ActorKnowledge, progress,
+or receipts are non-reversible. If state_revision refuses undo/redo, verify and
+restore a snapshot or branch; do not attempt document-only reversal.
 
 ## Session/scenario close and development
 

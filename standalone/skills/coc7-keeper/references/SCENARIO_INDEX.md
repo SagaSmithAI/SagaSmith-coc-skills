@@ -35,7 +35,7 @@ sagasmith-coc module current --campaign <id> --scope <scope> --json
 
 - `scene_type`：`investigation`、`social`、`combat`、`chase`、`travel`、
   `downtime`、`reference`、`handout` 或 `solo_node`；
-- `visibility`：`keeper`、`player` 或 `read_aloud`；
+- `visibility`：Core canonical `restricted`、`group` 或 `public`；
 - 起止行、起止页、heading path；
 - `subsections`：location、clue、core_clue、NPC、creature、handout、
   timeline、check、sanity_check 等；
@@ -57,7 +57,7 @@ sagasmith-coc module current --campaign <id> --scope <scope> --json
    当前地点，也不得读取其他 scope 的私人发现。
 3. 按字段执行：
    - `reference` 只供 Keeper 备课，不作为 current scene；
-   - `visibility=keeper` 不可朗读，`read_aloud` 可原样呈现，`player` 可作为 handout；
+   - `visibility=restricted` 不可朗读，`public` 可公开呈现，`group` 仅向授权小组呈现；
    - `clues`/`core_clue` 只表示可获取线索，必须满足原文获取方式后才能发现；
    - `checks`/`sanity` 只在原文触发条件出现时调用规则引擎，不自动掷骰；
    - `transitions` 只表示合法候选，不替玩家作选择。

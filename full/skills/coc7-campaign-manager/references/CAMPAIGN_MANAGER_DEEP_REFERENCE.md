@@ -80,8 +80,9 @@ decision boundary. Verify the snapshot before relying on it.
 ### Branch
 
 Create from an explicit parent/snapshot using expected campaign revision and
-active branch id. Checkout with the same guards. Use branch_query compare before
-explaining divergence.
+active branch id. Creation advances campaign revision even without checkout, so
+use the returned revision for the next guarded call. Checkout with the refreshed
+guards. Use branch_query compare before explaining divergence.
 
 ### Restore
 
@@ -96,7 +97,9 @@ explaining divergence.
 ### Undo/redo
 
 Use state_revision history/receipt before mutation. Undo/redo changes the branch
-head; it does not delete snapshots. Refresh and reread state after either.
+head; it does not delete snapshots. A mixed continuity ledger mutation is
+non-reversible and requires verified snapshot/branch recovery. Refresh and reread
+state after either path.
 
 ## Session close
 

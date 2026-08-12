@@ -24,7 +24,7 @@ After module_draft start, verify:
 - expected chapters/scenes/chunks and stable keys;
 - investigation, social, combat, chase, travel, reference, handout, and solo
   scene classifications where sourced;
-- Keeper/player/read-aloud visibility advisories;
+- canonical `restricted`/`group`/`public` visibility advisories;
 - clue, core-clue, handout, SAN, NPC, creature, timeline, and check subsections;
 - source page/chunk evidence;
 - numeric solo nodes and explicit transitions;
@@ -74,8 +74,10 @@ preserve Pack-specific fields.
 
 ## Visibility
 
-- Keeper visibility is not player narration.
-- Player/read-aloud material still requires the actual audience/context.
+- `restricted` content is not player narration.
+- `group`/`public` material still requires the actual audience/context.
+- CoC clues, checks, SAN expressions, transitions, and solo `node_id` live in
+  `profile_data`; do not read them as a fixed top-level Core scene superset.
 - A clue entry is available content, not proof of discovery.
 - A transition is a candidate, not a forced player choice.
 - Handouts must exclude Keeper annotations and hidden solution text.
