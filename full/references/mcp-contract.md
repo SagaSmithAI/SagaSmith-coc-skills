@@ -108,7 +108,7 @@ checks still apply to other tools.
 |---|---|
 | campaign_change | create, set_phase, grant_campaign, grant_actor |
 | campaign_query | list, get |
-| character_query / character_change | list/get; create/update |
+| character_query / character_change | list/get; create/instantiate/update |
 | module_draft | start, get, evidence, edit, finalize |
 | content_pack | list, get, import, export, activate, deactivate, remove |
 | module_query / module_change | list/index/current/progress/search; set_progress |
@@ -134,6 +134,14 @@ checks still apply to other tools.
 Use module_draft edit operations source_text, content, statblock, asset, actor,
 package, and advance. Use data as the action wrapper for current CoC module and
 Pack calls. Finalize a CoC draft with data.package_id.
+
+character_change(action="instantiate") is a Keeper-only Lobby operation for a
+Pack actor bound as preset_pc. Pass the library character id returned in
+content_pack import actor_map as data.template_id; data.name and
+data.player_name are optional overrides. The server validates the stored CoC
+investigator sheet, creates a campaign-local copy, and grants the Keeper actor
+control. Grant the resulting actor to its player explicitly with
+campaign_change(action="grant_actor").
 
 ## Revision and idempotency rules
 

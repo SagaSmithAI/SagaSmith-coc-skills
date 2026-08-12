@@ -17,6 +17,30 @@ player investigator before the authorized player confirms the complete draft.
 7. Reread and verify the created identity, sheet, revision, campaign, type, and
    actor control.
 
+## Instantiate a Pack preset
+
+When an imported current-schema Content Pack binds an investigator actor as
+`preset_pc`:
+
+1. Keep the template in the Pack library; do not edit it into campaign state.
+2. Read the successful content_pack import response and select the template id
+   from actor_map using the Pack actor id.
+3. In Lobby, call character_change(action="instantiate") with the campaign id
+   and data.template_id. data.name and data.player_name are optional reviewed
+   overrides.
+4. Reread the resulting campaign-local investigator and verify that the source
+   sheet was preserved. The Keeper receives actor control at instantiation.
+5. If the Pack or source requires a rolled starting value that is intentionally
+   absent from the reusable template, use the authoritative mechanic after
+   instantiation. For Quick-Start Luck, roll 3D6 with coc_dice_roll and update
+   Luck to the receipt total multiplied by five; never pre-roll locally.
+6. Grant the new actor to the authenticated player with
+   campaign_change(action="grant_actor"), then verify the player's actor-scoped
+   read before entering Play.
+
+Instantiate only investigator templates. Pack NPCs and creatures are imported
+directly as campaign cast and are not valid character_change templates.
+
 NPCs and creatures may be Keeper-confirmed. An executable Module actor requires
 a reviewed source-preserving statblock; missing mechanical values remain missing
 and may keep the actor narrative-only.

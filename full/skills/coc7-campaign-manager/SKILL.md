@@ -51,13 +51,23 @@ workspace memory, a local CLI, prose summaries, or direct database writes.
 
 1. Read the applicable ruleset/source and gather the complete investigator,
    NPC, or creature sheet.
-2. Present derived values and the complete draft for player/Keeper review.
-3. Persist only after the authorized human confirms the character.
-4. Reread the created character and verify identity, ruleset, HP/MP/SAN/Luck,
+2. For a Pack `preset_pc`, use the import response actor_map and instantiate its
+   library template into this campaign; otherwise create a reviewed sheet.
+3. Present derived values and the complete draft or instantiated sheet for
+   player/Keeper review.
+4. Persist a new sheet only after the authorized human confirms it; never edit
+   the Pack's reusable template into campaign state.
+5. Reread the campaign-local character and verify identity, ruleset,
+   HP/MP/SAN/Luck,
    characteristics, skills, combat values, conditions, development state, and
    actor authorization.
-5. For updates, merge the complete current sheet; do not discard unknown
+6. For updates, merge the complete current sheet; do not discard unknown
    campaign-approved fields.
+
+Instantiating a Pack preset grants the Keeper control, not the intended player.
+Initialize any source-required rolled field through the authoritative random
+stream, then grant the actor to the authenticated player explicitly. See the
+investigator lifecycle reference for the exact sequence.
 
 The current CoC MCP exposes complete character create/update, not D&D-style
 granular inventory, wallet, equipment, or transfer facades. Do not claim an
