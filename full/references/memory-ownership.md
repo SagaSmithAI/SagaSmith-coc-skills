@@ -99,10 +99,12 @@ same scene; the Agent decides perception, hearing, language, and comprehension.
 ## Secrets and NPC portrayal
 
 Module-authored secrets remain possibilities until a branch realizes them.
-Initial knowers identify authored NPC context, not player knowledge. The current
-CoC MCP lacks isolated NPC conversation workers; the Keeper Agent reads only
-legal current context, decides a response, publishes safe speech, and records
-only the speech or knowledge actually realized.
+Initial knowers identify authored NPC context, not player knowledge. Open an
+isolated npc_conversation for persistent NPC portrayal. The host-local worker
+receives only its server-built private capsule and activation reference; the
+Director receives only the server-derived publication. Close commits the
+approved public transcript and accepted durable deltas, while abort discards
+the private draft.
 
 ## Restore
 

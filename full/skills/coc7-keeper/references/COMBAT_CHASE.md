@@ -78,8 +78,11 @@ Use combat_end with victory, escape, surrender, defeat, or other plus source.
 It closes the encounter and returns to Play. Refresh tools, reread characters,
 and commit actual consequences.
 
-Current boundaries: do not claim unimplemented maneuver, automatic-fire burst,
-cover, vehicle, dying-round scheduler, or long-term healing details.
+Authority boundary: the Agent/source explicitly decides maneuver intent and
+effect, firing sequence, cover geometry, vehicle consequence, and when a
+dying/healing interval occurs. Use the current Combat, Chase, coc_hp_change,
+inventory, and continuity facades to settle the resulting mechanical state;
+never invent geometry, timing, or source facts inside MCP.
 
 ## Recovery
 
