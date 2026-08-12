@@ -1,6 +1,6 @@
 ---
 name: coc7-campaign-manager
-description: "Create and maintain source-bound SagaSmith Call of Cthulhu 7e campaigns. Use for campaign settings, access, investigators/NPCs/creatures, Module Packs, scene progress, continuity, ActorKnowledge, development, branches, snapshots, restore, undo/redo, and regression audits."
+description: "Create and maintain source-bound SagaSmith Call of Cthulhu 7e campaigns. Use for campaign settings, access, investigators/NPCs/creatures, Module and rules Packs, inventory, money, long-term development, scene progress, continuity, ActorKnowledge, branches, snapshots, restore, undo/redo, and regression audits."
 ---
 
 # Call of Cthulhu 7e Campaign Manager
@@ -25,9 +25,11 @@ workspace memory, a local CLI, prose summaries, or direct database writes.
 | Create/read campaign | campaign_change, campaign_query | references/CAMPAIGN_MANAGER_DEEP_REFERENCE.md |
 | Phase and access | game_phase, campaign_change | ../../references/mcp-contract.md |
 | Characters | character_query, character_change | ../coc7-keeper/references/INVESTIGATOR_CREATION.md |
+| Inventory and money | inventory_change, wallet_change | references/CAMPAIGN_MANAGER_DEEP_REFERENCE.md |
 | Module draft/Pack | module_draft, content_pack, module_query | ../coc7-keeper/references/SCENARIO_INDEX.md; sagasmith-modulegen |
+| Rules draft/Pack | rulebook_draft, content_pack, rule_query | ../../references/mcp-contract.md |
 | Scene progress | module_query, module_change | ../coc7-keeper/references/SCENARIO_INDEX.md |
-| Development | development_query, development_settle | ../coc7-keeper/references/INVESTIGATOR_CREATION.md |
+| Development | development_query, development_settle, long_term_change | ../coc7-keeper/references/INVESTIGATOR_CREATION.md |
 | Objective continuity | memory_query, memory_change, campaign_event | ../../references/memory-ownership.md |
 | Actor knowledge | actor_knowledge_query, actor_knowledge_change | ../../references/memory-ownership.md |
 | Branch/snapshot/recovery | branch_query/change, snapshot_query/change, state_revision | references/CAMPAIGN_MANAGER_DEEP_REFERENCE.md |
@@ -69,9 +71,10 @@ Initialize any source-required rolled field through the authoritative random
 stream, then grant the actor to the authenticated player explicitly. See the
 investigator lifecycle reference for the exact sequence.
 
-The current CoC MCP exposes complete character create/update, not D&D-style
-granular inventory, wallet, equipment, or transfer facades. Do not claim an
-atomic item/economy operation that is not present.
+Use inventory_change for stable-id add/update/remove/consume operations and
+wallet_change for one campaign-defined monetary field. These are guarded actor
+transactions. They do not implement a cross-actor equipment transfer; perform
+separate authorized writes and record the realized exchange in continuity.
 
 ## Module Pack lifecycle
 
@@ -87,6 +90,17 @@ atomic item/economy operation that is not present.
   Review replacement progress impact and explicit scene remaps.
 - Never activate the mechanical draft module or bypass evidence/finalization.
 
+## Rules Pack lifecycle
+
+- Use rulebook_draft in Lobby for a user-authorized local PDF/Markdown/text
+  source. Inspect evidence before finalization; do not encode book-specific
+  guesses in Core, system, or MCP code.
+- Finalize an immutable private core_rules schema-v2 Pack, then import and
+  activate it separately with fresh revisions.
+- Use rule_query sources/search/expand/effective in every phase. Treat returned
+  evidence and the active rule lock as authoritative source context, while the
+  Keeper remains responsible for interpreting ambiguous prose.
+
 ## Development
 
 Use development_query and development_settle in Lobby at an authorized
@@ -98,8 +112,12 @@ session/scenario improvement boundary:
 - The runtime rolls each eligible checked skill, applies increases and first
   mastery SAN where appropriate, clears all marks, and records the receipt.
 - Cthulhu Mythos is not an ordinary development check.
-- Do not invent Luck recovery, aging, Credit Rating changes, therapy, or Mythos
-  growth without a dedicated current mechanic/source workflow.
+- Use long_term_change only in Lobby for campaign-enabled Luck recovery,
+  source-explicit therapy, explicit source-reviewed aging deltas, or tome/spell
+  study. The Agent supplies printed values and decisions; the runtime owns the
+  random stream, SAN/Mythos bounds, source catalogs, revisions, and receipt.
+- Credit Rating changes still require a source-backed explicit sheet update;
+  do not derive them from wallet values.
 
 ## Continuity and recovery
 

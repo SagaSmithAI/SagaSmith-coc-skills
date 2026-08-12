@@ -23,6 +23,7 @@ prose, a CLI, or direct database access.
 | Work | Search/add native tools | Read deeper |
 |---|---|---|
 | Scene and source evidence | module_query, continuity_context | references/SCENARIO_INDEX.md |
+| Rule evidence | rule_query, continuity_context, bounded_evaluation | references/KEEPER_RULES.md |
 | Investigation checks | investigation_query, investigation_check | references/INVESTIGATION.md |
 | Group Luck | group_luck_query, group_luck_check | references/INVESTIGATION.md |
 | Other source-explicit rolls | coc_resolve, coc_dice_roll | references/KEEPER_RULES.md |
@@ -30,6 +31,7 @@ prose, a CLI, or direct database access.
 | Chase | chase_start, chase_query, chase_action, chase_end | references/COMBAT_CHASE.md |
 | Combat | combat_start, combat_query, combat_action, combat_attack, combat_end | references/COMBAT_CHASE.md |
 | Meaning and audience settlement | continuity_context, memory_change, campaign_event, actor_knowledge_change | ../../references/memory-ownership.md |
+| Sustained NPC dialogue | npc_conversation; host-local npc_conversation_worker | references/KEEPER_RULES.md |
 | Scene progress | module_query, module_change | references/SCENARIO_INDEX.md |
 | Save/restore | snapshot_query/change, branch_query/change, state_revision | ../../references/workflows.md |
 
@@ -109,10 +111,13 @@ requires an explicit reason; do not abort merely to obtain a different roll.
 ## Audience-safe narration and NPCs
 
 Use continuity_context with the actual audience and actor/scope. Keep objective
-Keeper facts, actor knowledge, and public narration distinct. The current CoC
-MCP has no isolated multi-turn NPC conversation facade; portray NPCs as Agent
-judgment from legal context, never leak raw private context, and persist only
-actual published speech/events.
+Keeper facts, actor knowledge, and public narration distinct. For a sustained
+conversation, open npc_conversation with all participants, submit explicit
+Agent rulings for who perceived, understood, and may respond, and dispatch only
+activation refs through the host-local worker transport. Relay only the
+server-derived publication. Resolve requested mechanics through public tools,
+publish with fresh audience facts, then close to settle the public transcript
+and selected durable deltas. Abort to discard an uncommitted conversation.
 
 ## End a scene or session
 

@@ -22,12 +22,13 @@ search/set only campaign_change. After creation, open a new exposure bound to th
 campaign. On a phase change, restore, branch checkout, undo, or redo, consume
 tools/list_changed, refresh schemas, and use search/set for the next phase.
 
-## Complete 43-tool inventory
+## Complete 51-tool inventory
 
 The server exposes exactly these public tool identities:
 
 ~~~text
 actor_knowledge_change  actor_knowledge_query
+bounded_evaluation
 branch_change           branch_query
 campaign_change         campaign_query         campaign_event
 character_change        character_query
@@ -39,8 +40,11 @@ development_query       development_settle
 exposure                game_phase
 group_luck_check        group_luck_query
 investigation_check     investigation_query
+inventory_change        long_term_change
 memory_change           memory_query
 module_change           module_draft           module_query
+npc_conversation        npc_conversation_worker
+rule_query              rulebook_draft
 server_capabilities     skill_query
 snapshot_change         snapshot_query         state_revision
 storage_status
@@ -56,46 +60,50 @@ phase-legal, exposed for the current session, and authorized again at call time.
 Loadable Lobby tools:
 
 ~~~text
-actor_knowledge_change actor_knowledge_query branch_change branch_query
+actor_knowledge_change actor_knowledge_query bounded_evaluation branch_change branch_query
 campaign_change campaign_event character_change character_query coc_dice_roll
 coc_resolve content_pack continuity_context development_query
-development_settle memory_change memory_query module_change module_draft
-module_query snapshot_change snapshot_query state_revision
+development_settle inventory_change long_term_change memory_change memory_query
+module_change module_draft module_query rule_query rulebook_draft snapshot_change
+snapshot_query state_revision wallet_change
 ~~~
 
 DM/owner authorization is required for actor_knowledge_change, branch_change,
 campaign_event, character_change, content_pack, memory_change, memory_query,
-module_change, module_draft, snapshot_change, snapshot_query, and state_revision.
+long_term_change, module_change, module_draft, rulebook_draft, snapshot_change,
+snapshot_query, and state_revision.
 
 ### Play
 
 Loadable Play tools:
 
 ~~~text
-actor_knowledge_change actor_knowledge_query branch_change branch_query
+actor_knowledge_change actor_knowledge_query bounded_evaluation branch_change branch_query
 campaign_change campaign_event character_change character_query chase_action
 chase_end chase_query chase_start coc_dice_roll coc_hp_change coc_resolve
 coc_sanity_check combat_start continuity_context group_luck_check
-group_luck_query investigation_check investigation_query memory_change
-memory_query module_change module_query snapshot_change snapshot_query
-state_revision
+group_luck_query investigation_check investigation_query inventory_change
+memory_change memory_query module_change module_query npc_conversation
+npc_conversation_worker rule_query snapshot_change snapshot_query
+state_revision wallet_change
 ~~~
 
 DM/owner authorization is required for actor_knowledge_change, branch_change,
 campaign_change, campaign_event, chase_end, chase_start, combat_start,
 group_luck_check, group_luck_query, memory_change, memory_query, module_change,
-snapshot_change, snapshot_query, and state_revision. Player calls remain limited
-by campaign membership and actor control.
+npc_conversation, npc_conversation_worker, snapshot_change, snapshot_query, and
+state_revision. Player calls remain limited by campaign membership and actor
+control. npc_conversation_worker is additionally local-only.
 
 ### Combat
 
 Loadable Combat tools:
 
 ~~~text
-actor_knowledge_query branch_change branch_query character_change
+actor_knowledge_query bounded_evaluation branch_change branch_query character_change
 character_query coc_dice_roll coc_hp_change coc_resolve coc_sanity_check
 combat_action combat_attack combat_end combat_query continuity_context
-module_query snapshot_change snapshot_query state_revision
+module_query rule_query snapshot_change snapshot_query state_revision
 ~~~
 
 branch_change, combat_end, snapshot_change, snapshot_query, and state_revision
@@ -109,8 +117,13 @@ checks still apply to other tools.
 | campaign_change | create, set_phase, grant_campaign, grant_actor |
 | campaign_query | list, get |
 | character_query / character_change | list/get; create/instantiate/update |
+| inventory_change | add, update, remove, consume |
+| wallet_change | set, adjust |
+| long_term_change | luck_recovery, therapy, aging, source_study |
 | module_draft | start, get, evidence, edit, finalize |
+| rulebook_draft | start, get, evidence, finalize |
 | content_pack | list, get, import, export, activate, deactivate, remove |
+| rule_query | sources, search, expand, effective |
 | module_query / module_change | list/index/current/progress/search; set_progress |
 | memory_query / memory_change | list/search; add/upsert/revise/commit |
 | campaign_event | add, list |
@@ -128,6 +141,9 @@ checks still apply to other tools.
 | chase_action | move, check, speed_check, end_turn |
 | combat_action | join, move, end_turn |
 | combat_attack | open, resolve, abort |
+| npc_conversation | open, list, get, ingest, publish, close, abort |
+| npc_conversation_worker | claim_activation, submit_proposal, cancel_activation |
+| bounded_evaluation | validate |
 | exposure | open, get, search, set |
 | skill_query | list, read |
 
@@ -217,16 +233,30 @@ deciding whether the semantic commit is still missing.
 - campaign events carry explicit dm/party/public/actor audiences and
   participants.
 
-## Known current boundaries
+## Rules, bounded evaluation, and NPC conversations
 
-Do not claim tools that do not exist. The current CoC MCP does not yet expose:
+- Author reviewed rules in Lobby with rulebook_draft, finalize a private
+  core_rules schema-v2 Pack, import/activate it with content_pack, then use
+  rule_query search/expand/effective in any phase. Keep copyrighted source text
+  local and preserve its checksums.
+- continuity_context may issue signed, short-lived bundles for actor_turn,
+  audience_render, faction_turn, source_interpretation, or bounded_ruling.
+  bounded_evaluation validates one strict tool-free proposal and never writes
+  authoritative state. It cannot replace a human investigator choice.
+- npc_conversation is the public Keeper facade. The Agent supplies explicit
+  perception, comprehension, and response facts; each NPC runs from a durable
+  private capsule. Only server-derived publications leave that capsule.
+- npc_conversation_worker is host-local transport. Never expose it to a remote
+  principal or copy private bootstrap/proposal data into Director context.
+- Close a conversation only after all activations, publications, and requested
+  mechanics are settled. Close commits the public transcript and explicitly
+  accepted working deltas; abort discards the draft. Active conversations block
+  phase, Chase, and Combat transitions.
 
-- rulebook_draft or rule-search/expand Pack facades;
-- isolated npc_conversation or bounded_evaluation;
-- D&D-style granular inventory/wallet/equipment transfer tools;
-- a separate module_expand tool;
-- granular long-term therapy, aging, Luck recovery, tome, spell-learning, or
-  vehicle-chase settlement.
+## Current boundaries
 
-Use source-backed Agent rulings and the existing standard writes only where that
-does not fabricate a missing deterministic mechanic.
+There is no separate module_expand facade; module_query search/current/progress
+and draft evidence provide the current module navigation surface. Inventory and
+wallet are actor-local mutations, not a cross-actor equipment-transfer
+transaction. Vehicle participants are source-bound Chase cards, while collision
+damage and elaborate vehicle subsystems remain source-backed Keeper rulings.

@@ -31,6 +31,7 @@ REQUIRED = {
 TOOLS = {
     "actor_knowledge_change",
     "actor_knowledge_query",
+    "bounded_evaluation",
     "branch_change",
     "branch_query",
     "campaign_change",
@@ -61,17 +62,24 @@ TOOLS = {
     "group_luck_query",
     "investigation_check",
     "investigation_query",
+    "inventory_change",
+    "long_term_change",
     "memory_change",
     "memory_query",
     "module_change",
     "module_draft",
     "module_query",
+    "npc_conversation",
+    "npc_conversation_worker",
+    "rule_query",
+    "rulebook_draft",
     "server_capabilities",
     "skill_query",
     "snapshot_change",
     "snapshot_query",
     "state_revision",
     "storage_status",
+    "wallet_change",
 }
 
 MOJIBAKE = ("�", "鈫", "涓", "鐞", "瀹", "璋", "绾", "鎴", "妫", "锛")
@@ -156,8 +164,8 @@ def main() -> None:
     missing_tools = sorted(tool for tool in TOOLS if tool not in contract)
     if missing_tools:
         fail("MCP contract missing tools: " + ", ".join(missing_tools))
-    if len(TOOLS) != 43:
-        fail("validator tool catalog must contain exactly 43 tools")
+    if len(TOOLS) != 51:
+        fail("validator tool catalog must contain exactly 51 tools")
 
     metadata = list((root / "full").rglob("agents/openai.yaml"))
     if len(metadata) != 3:

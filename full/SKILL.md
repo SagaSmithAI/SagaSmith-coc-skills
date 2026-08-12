@@ -80,9 +80,12 @@ through this MCP's module_draft and content_pack tools.
 - Player-visible responses must be computed from the authenticated audience.
   Never expose Keeper scenes, other actors' private knowledge, raw continuity
   context, or secret Pack fields.
-- Full Runtime currently has no isolated per-NPC conversation facade. Keep NPC
-  portrayal Agent-owned and settle only actual public events/knowledge. Do not
-  claim D&D npc_conversation or bounded_evaluation guarantees.
+- For sustained NPC dialogue, use npc_conversation with explicit Agent-resolved
+  audience facts. Keep npc_conversation_worker host-local, never relay private
+  capsules or raw proposals, and close or abort before phase/encounter changes.
+- Use signed continuity_context bundles plus bounded_evaluation for tool-free
+  actor, faction, source, ruling, or audience proposals. Validation never writes
+  state and actor_turn must never replace a human investigator choice.
 - Commercial rules and scenarios are not bundled. Import only user-authorized
   local files, preserve citations/checksums, and never commit private source
   text or generated private Pack archives.
@@ -93,9 +96,10 @@ through this MCP's module_draft and content_pack tools.
   executable module actors require source-preserving CoC statblocks.
 - Never accept caller-injected check thresholds when a live actor sheet owns the
   value. investigation_check reads the current characteristic, skill, or Luck.
-- Use the single sagasmith.content-package v2 format for Module Packs. The
-  mechanical first pass remains editable until explicit Agent finalization;
-  finalized archives are immutable.
+- Use the single sagasmith.content-package v2 format for Module and core_rules
+  Packs. The mechanical first pass remains editable until explicit Agent
+  finalization; finalized archives are immutable. Use rulebook_draft and
+  rule_query for reviewed local rules sources.
 - Core clues and obvious evidence are Agent scene decisions, not rolls. Use
   investigation_check for uncertain source-backed actions and settle meaning
   afterward.
@@ -116,6 +120,6 @@ switch:
 4. Use exposure search/set on the current binding for the next legal tools.
 5. Reopen exposure only for a genuinely different campaign/principal binding.
 
-Read references/mcp-contract.md for the current 43-tool surface,
+Read references/mcp-contract.md for the current 51-tool surface,
 references/workflows.md for ordered end-to-end flows, and
 references/memory-ownership.md before writing continuity.

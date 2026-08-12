@@ -8,7 +8,9 @@ and must close through their dedicated end tools.
 ### Start
 
 Read exact participants and character revisions. Supply source, route/hazard
-evidence when present, campaign revision, and one idempotency key. chase_start
+evidence when present, campaign revision, and one idempotency key. For a vehicle
+participant, set participant_kind=vehicle and bind the reviewed source card with
+source_id, name, and Build; use its source MOV for the participant. chase_start
 owns speed checks, effective MOV, action points, initial order/positions, random
 receipt, and Chase state.
 
@@ -32,8 +34,9 @@ consequences separately without duplicating positions/action points in memory.
 Use chase_end with escaped, caught, abandoned, or other plus a source-explicit
 outcome. Refresh Play tools and settle actual scene continuity.
 
-Current boundaries: do not claim vehicle collision/damage, elaborate multi-actor
-assistance, or Chase-within-Combat mechanics that the current facade lacks.
+Current boundaries: vehicle identity, Build, and MOV are authoritative Chase
+inputs, but collision/damage, elaborate multi-actor assistance, and
+Chase-within-Combat mechanics remain source-backed Keeper rulings.
 
 ## Combat
 

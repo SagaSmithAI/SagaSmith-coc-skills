@@ -13,8 +13,8 @@ mcp-contract.md for phase and authorization details.
 6. campaign_query get; game_phase; branch_query current.
 7. Expose character/Pack/access tools needed for setup.
 8. Create and reread confirmed investigators.
-9. Build/import/activate a finalized Module Pack or explicitly record an
-   improvised Keeper setup.
+9. Build/import/activate finalized rules and Module Packs as needed, or
+   explicitly record an improvised Keeper setup.
 10. Snapshot the ready Lobby state.
 11. campaign_change set_phase Play with current revision.
 12. Refresh tools and read the first legal scene/context.
@@ -81,7 +81,9 @@ mcp-contract.md for phase and authorization details.
 
 1. Confirm Play, no active Combat, source evidence, participants, actor
    revisions, route/hazards, and current campaign revision.
-2. chase_start; refresh if exposure changes.
+2. For a vehicle participant, bind participant_kind=vehicle and its reviewed
+   source_id/name/Build/MOV card. Then call chase_start and refresh if exposure
+   changes.
 3. chase_query before each action.
 4. chase_action move/check/speed_check/end_turn only from legal actions.
 5. Persist narrative consequences without duplicating chase state.
@@ -115,6 +117,32 @@ mcp-contract.md for phase and authorization details.
 8. content_pack import with current campaign revision; keep inactive.
 9. Refresh revision, review progress impact, and activate the imported module.
 
+## Rules Pack authoring/install
+
+1. Stay in Lobby and load rulebook_draft, content_pack, and rule_query.
+2. Start from one user-authorized managed PDF/Markdown/text source.
+3. Search draft evidence and review source checksums/normalization.
+4. Finalize the reviewed revision as a private core_rules schema-v2 Pack.
+5. Import inactive with the current campaign revision, then explicitly activate.
+6. Use rule_query effective to verify the rule lock, search a known rule, and
+   expand its source context before relying on the Pack in Play.
+
+## Isolated NPC conversation
+
+1. Confirm Play with no active Chase/Combat and gather every participant id.
+2. npc_conversation open; keep each returned conversation/revision handle.
+3. For each speech/action/scene stimulus, the Agent explicitly rules perceived,
+   understood, and response actor ids, then calls ingest.
+4. Send only activation_ref to the local host worker. The worker claims its
+   private capsule and submits a strict proposal without tool/state authority.
+5. Use only the server-derived publication. Resolve any requested mechanic via
+   public tools, then publish with fresh Agent-resolved audience facts.
+6. Repeat until no pending activation, publication, or resolution remains.
+7. Close to commit the public transcript and explicitly selected durable
+   deltas, or abort to discard the uncommitted dialogue.
+
+Never move phase, start Chase, or start Combat while a conversation is active.
+
 ## Snapshot, branch, and restore
 
 1. snapshot_query list/get/verify and branch_query current.
@@ -132,13 +160,16 @@ parent, checkout with guards, and keep sibling random streams/state isolated.
 
 ## Session/scenario close and development
 
-1. Settle/abort pending choices and close active Chase/Combat.
+1. Settle/abort pending choices, close/abort NPC conversations, and close active
+   Chase/Combat.
 2. Commit events/facts/knowledge/progress and create a boundary snapshot.
 3. Return from Play to Lobby with the latest revision.
 4. Refresh Lobby tools.
 5. For each authorized investigator, development_query then
    development_settle with current campaign/character revisions.
-6. Snapshot the post-development state.
+6. Apply authorized long_term_change transactions for Luck recovery, therapy,
+   aging, or source study using reviewed source values.
+7. Snapshot the post-development state.
 
 ## Two campaigns in parallel
 
