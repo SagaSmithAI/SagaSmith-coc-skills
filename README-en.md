@@ -1,59 +1,44 @@
-# SagaSmith CoC Skills
+# SagaSmith CoC 7e Skills
 
-[中文](README.md) · [English](README-en.md) · [CoC runtime](https://github.com/SagaSmithAI/Sagasmith-coc)
+[中文](README.md) · [English](README-en.md)
 
-**Call of Cthulhu 7e Keeper workflows for SKILL.md-compatible agents.** This repository describes investigation, clues, checks, sanity, insanity, combat, chases, scene visibility, and campaign operation. `sagasmith-coc` and `sagasmith-core` execute rules and persistence.
+Agent Skills for SagaSmith Call of Cthulhu 7e. Full Runtime uses
+sagasmith-coc-mcp native dynamic tools for investigation, clues, Luck/Push, SAN,
+injury, combat, chases, development, Content Packs, continuity, ActorKnowledge,
+branches, and snapshots.
 
-## Two modes
+## Two explicitly separate distributions
 
-| Mode | Entry | Best for | Boundary |
-|---|---|---|---|
-| **Full runtime** | [`full/SKILL.md`](full/SKILL.md) | persistent campaigns, PDF/Markdown scenarios, retrieval, progress, snapshots | currently orchestrates the JSON CLI |
-| **Standalone** | [`standalone/SKILL.md`](standalone/SKILL.md) | zero-dependency demos and file-based play | a subset, not Full parity |
+| Distribution | Entry | Boundary |
+|---|---|---|
+| Full Runtime | full/SKILL.md | authoritative MCP state, authorization, random streams, revisions, idempotency, and dynamic tools |
+| Standalone | standalone/SKILL.md | separate file-based demo subset without Full transaction/permission guarantees |
 
-CoC is converging on the independent MCP and session-exposure architecture already used by D&D. Until that boundary exists, Full Skills treat structured CLI output as the only committed result and do not claim D&D MCP-level principal, actor-knowledge, or combat-exposure guarantees.
+Full Runtime never silently falls back to a CLI or portable.py.
 
-## Coverage
+## Install Full Runtime
 
-- Classic/Pulp investigator creation and development;
-- d100 success levels, bonus/penalty dice, opposed and pushed rolls;
-- investigation, core clues, handouts, and Keeper-only information;
-- sanity loss, temporary/indefinite insanity, and symptoms;
-- melee, firearms, fight back/dodge, and chases;
-- ordinary scenarios, solo node graphs, and handout packs;
-- `party`, `group:<id>`, and `player:<id>` scene progress;
-- events, long-term memory, and branch snapshots.
+Install into one Python 3.11+ environment:
 
-## Keeper turn loop
+~~~powershell
+pip install -e "..\sagasmith-core[documents]"
+pip install -e ..\sagasmith-coc
+pip install -e ..\SagaSmith-coc-mcp
+~~~
 
-1. Resolve the acting investigator and scene scope.
-2. Read the current scene and filter Keeper-only information.
-3. Clarify method and intent instead of inferring an action from a skill name.
-4. Decide whether a check is required, its difficulty, bonus/penalty dice, and consequences.
-5. Settle openly and narrate player-visible results.
-6. Update clues, handouts, SAN, state, events, and progress.
-7. Snapshot major reveals, dangerous choices, and chapter transitions.
+Configure and run sagasmith-coc-mcp, then expose full/ and
+SagaSmith-module-gen-skills as Skill roots. The Host must refresh native schemas
+after tools/list_changed; a Host without dynamic native tool support cannot run
+Full Runtime.
 
-## Full install
+Commercial rulebooks/scenarios are not distributed. Private PDFs, extracted
+text, page renders, and Pack archives remain local by default.
 
-```bash
-pip install "sagasmith-coc[documents]"
-sagasmith-coc doctor --json
-```
+## Validate
 
-Load [`full/SKILL.md`](full/SKILL.md). Commercial books and scenarios are not distributed; import only material the user is authorized to use.
+~~~powershell
+python scripts\validate_skill.py .
+~~~
 
-## Standalone
-
-```powershell
-cd standalone
-python portable.py doctor
-python portable.py campaign start --name "Arkham"
-python portable.py roll d100 --score 65
-```
-
-Data lives at `~/.sagasmith/`. There is no PDF ingestion, FTS5, ChromaDB, or Full-grade permission/branch guarantee.
-
-## License
-
-Original Skill content is licensed under Apache-2.0. Call of Cthulhu and commercial material belong to their respective rights holders and are not included.
+Original Skill content is Apache-2.0. Call of Cthulhu and commercial content
+belong to their respective rights holders.

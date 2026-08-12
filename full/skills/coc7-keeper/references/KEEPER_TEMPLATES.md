@@ -1,72 +1,63 @@
-# CoC 7e 守秘人输出格式模板
+# Keeper presentation templates
 
-## 检定结果输出
+These are audience-safe presentation shapes. They do not replace MCP receipts
+or authorize state changes.
 
-### 技能检定
-```
-【技能名称检定·难度】调查员名：阈值 X%
-  → d100 = YY (奖励骰/惩罚骰)
-  → 结果 = YY (阈值 X%) → 常规成功 ✅
-```
+## Investigation result
 
-### 战斗攻击
-```
-【近战攻击】攻击者（武器名）：技能 X%
-  → d100 = YY = 结果
-  → 命中！伤害: D+DB = N 点
-```
+~~~text
+[Action and method]
+Actor: <name>
+Goal: <goal>
+Roll: <authoritative d100 and modifiers>
+Result: <returned success level>
+Decision: <none / Luck chosen by player / Push with declared stake>
+Visible consequence: <audience-safe narration>
+~~~
 
-### 理智损失
-```
-【理智损失】调查员名：来源
-  → SAN XX - N = YY（上限 ZZ）
-  ⚠️ 损失 ≥ 5 → 临时疯狂
-```
+Keep source thresholds, private clues, and Keeper diagnostics out of player
+output unless the character/audience legitimately knows them.
 
-## 叙事输出
+## SAN encounter
 
-### 场景描述
-```
-地点：
-时间：
-氛围：[感官细节描述]
+~~~text
+[Encounter]
+Actor: <name>
+Trigger perceived: <safe description>
+SAN result/loss: <authoritative returned values>
+Immediate visible effect: <safe narration>
+Private follow-up: <omit from other players>
+~~~
 
-[场景主要描述]
-```
+## Scene frame
 
-### NPC 介绍
-```
-[NPC 名] — [简要印象]
-[外貌和举止描述]
-```
+~~~text
+Place and time: <known current facts>
+Immediate sensory evidence: <what this audience perceives>
+Present actors: <only legally known/present actors>
+Open questions or choices: <no forced route>
+~~~
 
-### 线索呈现
-```
-[线索描述]
+## Clue sharing
 
-隐藏信息：（仅守秘人可见）
-[DC 或检定类型]
-```
+~~~text
+Speaker/source actor: <actor>
+Recipients: <actual audience>
+Information shared: <only proposition actually communicated>
+Misunderstanding/uncertainty: <if realized>
+~~~
 
-## Snapshot 存档格式
+Record the sharing event and new ActorKnowledge before relying on it later.
 
-```json
-{
-  "snapshot": {
-    "campaign_id": "...",
-    "schema_version": 1,
-    "captured_at": "2026-06-30T...",
-    "payload": {
-      "world_state": {...},
-      "party": {...},
-      "characters": [...],
-      "combats": [...],
-      "plot_summaries": [...],
-      "events": [...],
-      "scene_states": [...],
-      "channel_bindings": [...],
-      "rule_profile": {...}
-    }
-  }
-}
-```
+## Recovery recap
+
+~~~text
+Campaign/branch: <current authoritative identity>
+Phase: <Lobby/Play/Combat>
+Current scene/scope: <current module progress>
+Active encounter/pending choice: <authoritative status>
+Known public facts: <player-safe continuity>
+Next legal decisions: <not preselected>
+~~~
+
+Generate this only after rereading post-restore state.

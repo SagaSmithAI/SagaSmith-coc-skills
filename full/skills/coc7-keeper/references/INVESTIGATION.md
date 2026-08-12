@@ -1,18 +1,109 @@
-# 调查与线索运行
+# Investigation, clues, Luck, and Push
 
-## 信息边界
+## Information boundary
 
-- 场景原文分成 Keeper 信息、明显线索、需要行动获得的线索和后续触发。
-- 只叙述调查员能感知的内容；不能把隐藏真相、NPC 秘密或未来地点放进公开摘要。
-- 核心线索不能因一次失败永久丢失。失败应产生代价、延迟、风险或不完整信息。
+Separate:
 
-## 每个调查场景
+- Keeper-only authored truth;
+- immediately perceivable evidence;
+- supplementary information from an action/check;
+- per-actor learned or believed knowledge;
+- public/party information after an actual sharing event.
 
-1. 读取当前场景和已发现线索，不扫描整本模组寻找“正确答案”。
-2. 接受玩家方法，再判断自动获得、常规检定、困难检定、对抗或推掷。
-3. 推掷前明确失败后果；战斗和 SAN 检定通常不能推掷。
-4. 获得线索后更新 scene progress，追加 discovery event；跨场景有效的事实写 memory。
-5. NPC 的态度、目标、已知信息和受压状态保存在 campaign world state。
-6. 场景结束时检查未解决线索、时间线推进、敌对行动和下一入口。
+A clue heading marks authored possibility, not automatic discovery. Conversely,
+do not roll when the source makes the evidence obvious for the stated method.
 
-手记、照片和文献正文可作为模组资产检索，但玩家看到的版本必须移除 Keeper 注释。
+## Pending-check state machine
+
+~~~text
+none -> open -> spend_luck -> settle -> history
+             -> push       -> settle -> history
+             -> settle                  history
+             -> abort                   history
+~~~
+
+One actor has at most one pending check. Always query pending state after
+interruption, restart, revision conflict, or uncertain transport result.
+
+## Open a single check
+
+Supply:
+
+- source: concise source/scene basis;
+- goal: exact intended result;
+- trait_kind: skill, characteristic, or luck;
+- trait_name: current sheet key;
+- difficulty: regular, hard, or extreme;
+- bonus_dice and penalty_dice.
+
+Use current campaign and character revisions plus an exact-request idempotency
+key. The runtime reads the threshold from the current sheet; never inject it.
+
+## Open a combined check
+
+Supply traits instead of one trait plus explicit requirement any or all. Use one
+roll for two to eight current sheet traits. Each component retains its own
+difficulty and outcome. The runtime computes exact aggregate Luck cost and marks
+each eligible successful skill at settle.
+
+The Keeper decides any/all from the action's meaning before the roll. Do not
+choose the requirement after seeing the result.
+
+## Spend Luck
+
+- The campaign must enable the optional Spending Luck rule.
+- Present the returned exact available action and current Luck to the player.
+- Submit only the player's chosen positive amount.
+- Do not spend more than current Luck or pretend to purchase an illegal result.
+- After Luck changes the character revision, use the returned revisions for
+  settle.
+
+## Push
+
+Before push, record:
+
+- justification: how the actor changes/intensifies the attempt;
+- failure_consequence: the concrete worse outcome already accepted as the stake;
+- any changed trait/difficulty/dice modifiers justified by source/fiction.
+
+Do not Push a check the runtime marks ineligible. A pushed result cannot then
+spend Luck. The Keeper applies the declared consequence only if the pushed
+outcome calls for it, then records it in continuity.
+
+## Settle and commit meaning
+
+Settle moves the mechanical check to bounded history and may mark development.
+It does not decide clue text, audience, NPC response, or scene transition.
+
+After settle:
+
+1. interpret outcome from exact source/current context;
+2. call memory_change commit with actual event/facts/ActorKnowledge;
+3. update the correct party/group/player scene scope;
+4. narrate only safe information.
+
+If the continuity call fails, query check history and continuity before retrying
+the semantic commit. Do not reroll.
+
+## Multiple investigators
+
+Use independent pending checks per actor when several investigators try. Another
+investigator may attempt failed supplementary parts when the source/situation
+allows. Do not combine their successes into a majority rule.
+
+## Group Luck
+
+1. Supply the exact present participant actor ids to group_luck_query.
+2. The runtime reads current Luck and returns the lowest candidate(s).
+3. If tied, the Keeper explicitly selects one returned lowest candidate.
+4. group_luck_check rolls once from the campaign stream.
+5. Commit the source-specific group consequence separately.
+
+Group Luck does not spend the selected actor's Luck.
+
+## Essential clues
+
+Keep multiple viable discovery routes for plot-critical revelations. When a roll
+fails, preserve playability by applying source-consistent cost, delay, danger,
+partial detail, or alternate route. Never fabricate the clue or nullify player
+choices merely to force a planned plot.

@@ -1,59 +1,50 @@
-# SagaSmith CoC Skills
+# SagaSmith CoC 7e Skills
 
-[中文](README.md) · [English](README-en.md) · [CoC runtime](https://github.com/SagaSmithAI/Sagasmith-coc)
+[中文](README.md) · [English](README-en.md)
 
-**面向兼容 SKILL.md Agent 的 Call of Cthulhu 7e 守秘工作流。** 本仓库描述调查、线索、检定、SAN、疯狂、战斗、追逐、场景可见性和调查团生命周期；规则与持久化由 `sagasmith-coc` / `sagasmith-core` 执行。
+面向 SagaSmith Call of Cthulhu 7e 的 Agent Skills。Full Runtime 使用
+sagasmith-coc-mcp 的原生动态工具，覆盖调查、线索、Luck/Push、SAN、伤害、
+战斗、追逐、成长、Content Pack、连续性、角色知识、分支与 Snapshot。
 
-## 两种模式
+## 两个明确分开的分发
 
-| 模式 | 入口 | 适用场景 | 边界 |
-|---|---|---|---|
-| **Full runtime** | [`full/SKILL.md`](full/SKILL.md) | 持久化调查团、PDF/Markdown 模组、检索、场景进度、Snapshot | 当前通过 JSON CLI 编排 |
-| **Standalone** | [`standalone/SKILL.md`](standalone/SKILL.md) | 无依赖演示、快速跑团和文件状态 | 能力子集，不等价于 Full |
+| 分发 | 入口 | 边界 |
+|---|---|---|
+| Full Runtime | full/SKILL.md | 权威 MCP 状态、权限、随机流、修订、幂等与动态工具 |
+| Standalone | standalone/SKILL.md | 独立的文件型演示子集，不具备 Full 的事务与权限保证 |
 
-CoC 正在向 D&D 已采用的独立 MCP + 会话 exposure 架构演进。在完成该边界前，Full Skill 必须把 CLI 输出当作唯一提交结果，不应宣称拥有 D&D MCP 的 principal、actor knowledge 或 combat exposure 保证。
+Full Runtime 不会在 MCP 不可用时静默退回 CLI 或 portable.py。
 
-## 覆盖范围
+## Full Runtime 安装
 
-- Classic/Pulp 调查员创建与成长；
-- d100 成功等级、奖励/惩罚骰、对抗与孤注一掷；
-- 调查、核心线索、handout 和 Keeper-only 信息；
-- SAN 损失、临时/不定期疯狂与症状；
-- 近战、远程、反击/闪避和追逐；
-- 普通 scenario、solo 节点图与 handout pack 解析；
-- `party` / `group:<id>` / `player:<id>` 场景进度；
-- 事件、长期记忆与分支 Snapshot。
+在同一 Python 3.11+ 环境中安装：
 
-## Keeper 回合闭环
+~~~powershell
+pip install -e "..\sagasmith-core[documents]"
+pip install -e ..\sagasmith-coc
+pip install -e ..\SagaSmith-coc-mcp
+~~~
 
-1. 确定 acting investigator 与 scene scope；
-2. 读取当前场景，过滤 Keeper-only 信息；
-3. 澄清调查员实际方法，而不是只根据技能名猜行动；
-4. 判断是否需要检定、难度、奖励/惩罚骰和失败代价；
-5. 公开结算并叙述玩家可见后果；
-6. 更新线索、handout、SAN、状态、事件和进度；
-7. 重大揭示、危险选择或章节转换时创建 Snapshot。
+配置并启动 sagasmith-coc-mcp，再把 full/ 和
+SagaSmith-module-gen-skills 作为 Skill 根目录提供给 Host。Host 必须支持
+tools/list_changed 后刷新原生 schema；不支持动态工具列表的 Host 不能运行
+Full Runtime。
 
-## Full 安装
+## 权责边界
 
-```bash
-pip install "sagasmith-coc[documents]"
-sagasmith-coc doctor --json
-```
+- Core：系统中立持久化、文档、检索、分支、快照和事务。
+- sagasmith-coc：确定性 CoC 规则、角色/Statblock schema、模组解析和 Pack 验证。
+- MCP：权威状态、授权、随机流、修订、幂等、结算和动态暴露。
+- Agent/Skills：来源解释、感知/理解/受众、线索含义、NPC 决策、叙事和 Pack 审阅。
 
-然后加载 [`full/SKILL.md`](full/SKILL.md)。商业规则书和模组不随 Skill 分发；只导入用户有权使用的文件。
+商业规则书和模组不随本仓库分发。用户私有 PDF、提取文本、页面渲染与 Pack
+默认只保存在本地。
 
-## Standalone
+## 验证
 
-```powershell
-cd standalone
-python portable.py doctor
-python portable.py campaign start --name "Arkham"
-python portable.py roll d100 --score 65
-```
+~~~powershell
+python scripts\validate_skill.py .
+~~~
 
-数据位于 `~/.sagasmith/`。无 PDF、FTS5、ChromaDB 或完整权限/分支保证。
-
-## License
-
-原创 Skill 内容使用 Apache-2.0。Call of Cthulhu 及商业内容归各自权利人所有，不包含在本仓库中。
+原创 Skill 内容使用 Apache License 2.0。Call of Cthulhu 及商业内容归各自
+权利人所有。

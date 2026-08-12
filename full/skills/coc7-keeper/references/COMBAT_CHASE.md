@@ -1,29 +1,89 @@
-# 战斗与追逐
+# Authoritative Chase and Combat
 
-## 近战
+Chase and Combat are mutually exclusive authoritative states. Both begin in Play
+and must close through their dedicated end tools.
 
-1. 明确攻击者、武器、目标及防御者选择：闪避或反击。
-2. 分别公开掷攻击与防御；两边都要提交真实阈值和骰值。
-3. 比较成功等级。闪避同级时防御者挡住攻击；反击同级时攻击者命中。
-4. 命中后计算武器伤害与适用 DB。极难成功按武器类型处理穿刺；大成功使用规则来源
-   指定的满伤，不能笼统翻倍。
-5. 护甲在伤害后扣除。单次伤害达到最大 HP 一半时标记重伤并进行 CON 检定；HP 归零
-   后按重伤、昏迷和濒死状态继续处理。
+## Chase
 
-`combat melee` 的 payload 应含 `weapon_damage`、`damage_bonus`、
-`target_roll`、`target_dodge` 或 `target_fighting`，以及 `defense`。
+### Start
 
-## 远程
+Read exact participants and character revisions. Supply source, route/hazard
+evidence when present, campaign revision, and one idempotency key. chase_start
+owns speed checks, effective MOV, action points, initial order/positions, random
+receipt, and Chase state.
 
-根据射程、瞄准、掩体、目标体型、射速、装填和近距离状态计算奖励/惩罚骰。传入武器
-故障值；达到故障值时不能继续结算伤害。弹药、装填和故障状态写回角色卡。
+Do not invent route geometry. Omit optional route data when the source leaves it
+to Keeper judgment.
 
-## 追逐
+### Operate
 
-1. 建立参与者、阵营、MOV、位置、载具与障碍。
-2. 速度检定调整追逐 MOV；以最慢参与者为基准计算每轮行动次数。
-3. 每次移动、障碍、攻击或协助都消耗追逐行动。
-4. 障碍失败可能造成伤害、失速或额外距离变化。
-5. 达成逃脱、追上、失去行动能力或 Keeper 判定的终止条件后结束追逐。
+Call chase_query before every action. Use only returned legal actions:
 
-追逐状态属于战役动态状态，关键变化写 event；结束后清理临时追逐状态并保存。
+- move;
+- check for an explicit hazard/barrier/task;
+- speed_check when currently legal;
+- end_turn.
+
+Each action consumes authoritative Chase resources. Record narrative
+consequences separately without duplicating positions/action points in memory.
+
+### End
+
+Use chase_end with escaped, caught, abandoned, or other plus a source-explicit
+outcome. Refresh Play tools and settle actual scene continuity.
+
+Current boundaries: do not claim vehicle collision/damage, elaborate multi-actor
+assistance, or Chase-within-Combat mechanics that the current facade lacks.
+
+## Combat
+
+### Start
+
+Confirm no active Chase. Supply:
+
+- exact participants and current character revisions;
+- source;
+- campaign revision and idempotency key;
+- positioning_mode grid or agent;
+- grid metric/unit only for grid.
+
+Use grid only when authoritative coordinates are available. In agent mode,
+provide no synthetic coordinates; the Keeper rules range, line of sight,
+obstruction, and friendly-fire risk from current evidence.
+
+combat_start owns order, ready-fire handling, participants, round/turn state,
+phase transition, and revisions. Refresh schemas after tools/list_changed.
+
+### Observe and act
+
+Call combat_query before each turn/action.
+
+- combat_action join/move/end_turn handles guarded non-attack state.
+- combat_attack(open) creates an authoritative attack plus required defense or
+  response choice.
+- combat_attack(resolve) answers the exact pending choice and owns attack,
+  damage, armor, HP/wound transition, ammunition/malfunction where implemented,
+  random receipts, and revisions.
+- combat_attack(abort) records an explicit cancellation; never use it to reroll.
+
+Resolve/abort the pending attack before ending Combat or changing stale context.
+Use coc_hp_change only for a separate legal non-attack damage/heal transition.
+
+### End
+
+Use combat_end with victory, escape, surrender, defeat, or other plus source.
+It closes the encounter and returns to Play. Refresh tools, reread characters,
+and commit actual consequences.
+
+Current boundaries: do not claim unimplemented maneuver, automatic-fire burst,
+cover, vehicle, dying-round scheduler, or long-term healing details.
+
+## Recovery
+
+After restart or uncertain transport:
+
+1. read phase;
+2. query the active Chase/Combat and pending choices;
+3. inspect state revision receipt/history;
+4. reuse an idempotency key only for the exact same request;
+5. continue from returned legal state rather than reconstructing it from prose.

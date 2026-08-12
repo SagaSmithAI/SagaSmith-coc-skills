@@ -1,104 +1,73 @@
-# CoC 7e 守秘人裁决规则参考
+# Keeper mechanic ownership
 
-## d100 检定基础
+This reference is an operating boundary, not a replacement rulebook. Use
+user-authorized source evidence and the deterministic sagasmith-coc engine.
 
-### 公式
-`d100 ≤ 阈值 × 难度系数 → 成功`
+## Source order
 
-### 难度等级
-| 难度 | 系数 | 描述 |
-|------|------|------|
-| 常规 (Regular) | ×1 | 一般难度 |
-| 困难 (Hard) | ×1/2 | 有挑战性 |
-| 极难 (Extreme) | ×1/5 | 非常困难 |
+1. Active finalized Module Pack for scenario-specific truth.
+2. Active authorized rule/content Pack when available.
+3. Current campaign profile and validated actor sheet.
+4. Agent Keeper ruling for narrative facts the system intentionally leaves open.
+5. Human input for player intent, permission, optional resource choices, and
+   genuinely missing/conflicting evidence.
 
-### 成功等级 (自动判定)
-| 等级 | 条件 | 描述 |
-|------|------|------|
-| 大成功 (Critical) | 01 | 完美成功，伤害满值 |
-| 极难成功 (Extreme) | ≤ 阈值/5 | 卓越结果 |
-| 困难成功 (Hard) | ≤ 阈值/2 | 良好结果 |
-| 常规成功 (Regular) | ≤ 阈值 | 普通成功 |
-| 失败 (Failure) | > 阈值 | 未达成目标 |
-| 大失败 (Fumble) | 技能<50 时 96-100；技能≥50 时 100 | 灾难性结果 |
+Never promote one source book's exception into reusable engine behavior.
 
-### 奖励骰与惩罚骰
-- **奖励骰**: 多掷一个十位骰，取最低结果（最多 2 个）
-- **惩罚骰**: 多掷一个十位骰，取最高结果（最多 2 个）
-- 来源：有利/不利条件、技能等级、装备品质、环境因素
+## Choose the highest-level mechanic
 
-### 推掷 (Push Roll)
-- 允许重掷一次，但失败代价更大
-- 仅当技能允许推掷时可用
-- 大失败时通常不能推掷（除非房规允许）
+| Need | Use |
+|---|---|
+| Live characteristic/skill/Luck check | investigation_check |
+| Combined any/all check | investigation_check with traits |
+| Group Luck | group_luck_query/check |
+| Opposed or specialized one-shot resolution | coc_resolve |
+| SAN encounter | coc_sanity_check |
+| Non-combat damage/heal | coc_hp_change |
+| Active Chase | chase tools |
+| Active Combat | combat tools |
+| Unowned raw roll | coc_dice_roll |
 
-### 幸运消耗 (Luck Spend)
-- 每消耗 1 点幸运 = 掷骰结果减 1
-- 可提升成功等级
-- 仅消耗后有实际效果时才可用
+Higher-level tools read current actor values, own random receipts, validate
+optional rules, update authoritative state, and preserve idempotency. Do not
+replace them with arithmetic or a raw die roll.
 
-## 战斗规则
+## Investigation principles
 
-### 近战
-- 攻击者使用格斗技能 vs 防御者闪避或格斗
-- 比较成功等级: 攻击者等级 > 防御者 → 命中
-- 伤害 = 武器伤害 + DB（伤害加值）
-- 大成功 (01): 伤害取满值
+- Describe player method and goal before selecting a trait.
+- Give obvious/source-guaranteed information without a roll.
+- Declare difficulty and ordinary failure consequence before open.
+- Let the human choose Luck expenditure or Push.
+- A Push requires a plausible intensified/changed approach and a known worse
+  failure consequence.
+- A combined check uses one roll and an explicit any/all requirement.
+- Multiple actor attempts are independent; group Luck is a different rule.
+- Settle the mechanic before committing clue meaning and audience.
 
-### 远程
-- 使用枪械/射击技能
-- 射程波段: 常规/远距/极远 (逐渐增加惩罚骰)
-- 大失败 (96-100): 武器卡壳/走火
+## Success and failure
 
-### 伤害加值 (DB) 表
-| STR+SIZ | DB | Build |
-|---------|----|-------|
-| 2-64 | -2 | -2 |
-| 65-84 | -1 | -1 |
-| 85-124 | 0 | 0 |
-| 125-164 | +1D4 | +1 |
-| 165-204 | +1D6 | +2 |
-| 205-284 | +2D6 | +3 |
-| 285-364 | +3D6 | +4 |
-| 365-444 | +4D6 | +5 |
+The engine owns d100 selection, bonus/penalty dice, success level, fumble,
+difficulty, Luck legality/cost, Push legality, opposed tie handling, and
+development eligibility. Use the returned result rather than re-deriving it.
 
-## 理智规则
+The Agent owns what the result means in this situation. A failed investigation
+may cost time, position, safety, completeness, or opportunity; it should not
+erase the only indispensable clue.
 
-### SAN 上限
-`SAN max = 99 - CthulhuMythos 技能值`
+## Standard versus semantic state
 
-### 理智损失
-- 单次损失 ≥ 5 → 进行 INT 检定；成功理解恐怖后进入临时疯狂
-- 当日累计 ≥ SAN/5 → 进入不定期疯狂
+- Mechanical HP/SAN/Luck/skills/conditions: character sheet through MCP.
+- Chase/Combat actions: encounter facade.
+- Scene discovery/progress: module_change.
+- Objective durable facts: memory.
+- Chronology: event.
+- Subjective information: ActorKnowledge.
+- Narration: Agent output for the actual audience.
 
-### 疯狂类型
-| 类型 | 触发条件 | 持续时间 |
-|------|---------|---------|
-| 临时疯狂 | 单次 SAN 损失 ≥ 5 | 1D10 轮/小时 |
-| 不定期疯狂 | 临时疯狂 + 当日累计超限 | 1D10+ 月 |
-| 永久疯狂 | SAN 降至 0 | 永久 |
+## Block only when required
 
-### 技能掌握
-- 技能 ≥ 90% → 掌握
-- 掌握后获得 2D6 SAN 恢复
-- 后续理智损失事件减少
-
-## 追逐规则
-
-### 初始设置
-1. 确定所有参与者的 MOV
-2. 计算行动次数: MOV - 偏移 + 1
-3. 按 MOV 排序行动顺序
-
-### 速度检定
-| 结果 | MOV 变化 |
-|------|---------|
-| 大成功/极难成功 | +2 |
-| 困难成功 | +1 |
-| 常规成功 | 0 |
-| 失败 | -1 |
-| 大失败 | -1 且绊倒 |
-
-### 距离
-- 初始距离由守秘人设定
-- 缩短/拉长距离需要行动
+Block for missing permission, unresolved player choice, stale authoritative
+revision, conflicting/missing required source evidence, active incompatible
+encounter, or mechanically indispensable data. Do not block for missing
+portraits, optional presentation, advisory readiness, or a narrative fact the
+Keeper is authorized to rule.

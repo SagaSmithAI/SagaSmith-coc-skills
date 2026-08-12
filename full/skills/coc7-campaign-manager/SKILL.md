@@ -1,72 +1,110 @@
 ---
 name: coc7-campaign-manager
-description: "Manage CoC 7e campaigns, investigators, scenarios, saves, and memory through sagasmith-coc."
+description: "Create and maintain source-bound SagaSmith Call of Cthulhu 7e campaigns. Use for campaign settings, access, investigators/NPCs/creatures, Module Packs, scene progress, continuity, ActorKnowledge, development, branches, snapshots, restore, undo/redo, and regression audits."
 ---
 
-# CoC 7e Campaign Manager
+# Call of Cthulhu 7e Campaign Manager
 
-All commands include `--json`.
+Use the sagasmith_coc MCP runtime. Campaign truth belongs to the server, not
+workspace memory, a local CLI, prose summaries, or direct database writes.
 
-Read `../coc7-keeper/references/KEEPER_RULES.md` before mutating an active
-investigation. Keep player assignments in campaign state; platform profile files
-are projections, not authority.
+## Start with the runtime
 
-## Start
+1. Read campaign_query and server_capabilities.
+2. Open the correct campaign/principal exposure, search for the smallest
+   relevant tool set, expose it, and refresh native schemas.
+3. Read game_phase, current branch, campaign revision, relevant character
+   revisions, active Module Pack, and pending encounter/check state.
+4. Keep administrative work in Lobby. Do not force Lobby while a check, Chase,
+   or Combat still requires authoritative settlement.
 
-```powershell
-sagasmith-coc campaign start --name "<name>" --ruleset classic --locale zh --json
-sagasmith-coc campaign start --name "<name>" --ruleset pulp --locale zh --json
-```
+## Route campaign work
 
-Import user-owned rules or scenarios:
+| Work | Search/add native tools | Read deeper |
+|---|---|---|
+| Create/read campaign | campaign_change, campaign_query | references/CAMPAIGN_MANAGER_DEEP_REFERENCE.md |
+| Phase and access | game_phase, campaign_change | ../../references/mcp-contract.md |
+| Characters | character_query, character_change | ../coc7-keeper/references/INVESTIGATOR_CREATION.md |
+| Module draft/Pack | module_draft, content_pack, module_query | ../coc7-keeper/references/SCENARIO_INDEX.md; sagasmith-modulegen |
+| Scene progress | module_query, module_change | ../coc7-keeper/references/SCENARIO_INDEX.md |
+| Development | development_query, development_settle | ../coc7-keeper/references/INVESTIGATOR_CREATION.md |
+| Objective continuity | memory_query, memory_change, campaign_event | ../../references/memory-ownership.md |
+| Actor knowledge | actor_knowledge_query, actor_knowledge_change | ../../references/memory-ownership.md |
+| Branch/snapshot/recovery | branch_query/change, snapshot_query/change, state_revision | references/CAMPAIGN_MANAGER_DEEP_REFERENCE.md |
 
-```powershell
-sagasmith-coc rules ingest --path "<rulebook.pdf>" --publication "<title>" --locale zh --json
-sagasmith-coc module inspect --path "<scenario.pdf>" --json
-sagasmith-coc module ingest --campaign <id> --path "<scenario.pdf>" --json
-sagasmith-coc module index --campaign <id> --json
-```
+## Campaign setup
 
-Inspect before ingest. Read
-`../coc7-keeper/references/SCENARIO_INDEX.md` and stop automatic setup when its
-quality gates fail. After ingest, verify scene types, page ranges, handouts, and
-solo-node transitions through `module index`.
+- Create only after the user authorizes a new campaign. Record an explicit
+  Classic/Pulp ruleset, era, locale, optional Spending Luck setting, and other
+  campaign-approved options.
+- The authenticated creator becomes the campaign owner. Grant campaign roles and
+  actor control only to stable host-authenticated principals.
+- Never treat player_name, chat nickname, or a prompt-supplied principal as
+  authority.
+- Before Play, verify at least one controlled active investigator, one active
+  finalized Module Pack or an explicitly improvised Keeper situation, and a
+  recoverable current branch.
+- Keep two concurrent campaigns isolated by campaign id, exposure/session,
+  branch, random stream, revisions, actors, knowledge, and snapshots.
 
-## Investigators
+## Character lifecycle
 
-```powershell
-sagasmith-coc investigator create --campaign <id> --name "<name>" --player "<player>" --sheet '@<sheet.json>' --json
-sagasmith-coc investigator list --campaign <id> --json
-sagasmith-coc investigator show --id <id> --json
-sagasmith-coc investigator update --id <id> --sheet '@<sheet.json>' --json
-```
+1. Read the applicable ruleset/source and gather the complete investigator,
+   NPC, or creature sheet.
+2. Present derived values and the complete draft for player/Keeper review.
+3. Persist only after the authorized human confirms the character.
+4. Reread the created character and verify identity, ruleset, HP/MP/SAN/Luck,
+   characteristics, skills, combat values, conditions, development state, and
+   actor authorization.
+5. For updates, merge the complete current sheet; do not discard unknown
+   campaign-approved fields.
 
-Persist only after player confirmation.
+The current CoC MCP exposes complete character create/update, not D&D-style
+granular inventory, wallet, equipment, or transfer facades. Do not claim an
+atomic item/economy operation that is not present.
 
-Validate a complete draft before creation:
+## Module Pack lifecycle
 
-```powershell
-sagasmith-coc investigator validate --sheet '@<sheet.json>' --json
-```
+- Use module_draft only in Lobby. Start from one managed source, review exact
+  evidence, apply source/content/statblock/asset/actor/package edits, and
+  explicitly finalize the current revision.
+- Use the sagasmith-modulegen Skill for the current coc7e schema: scenario,
+  campaign, solo_adventure, or handout_pack; all six CoC play-profile sections;
+  exact CoC catalogs; reachable endings where required.
+- Finalized archives are immutable and remain local for commercial/private
+  sources.
+- content_pack import is inactive. Activate only with a fresh campaign revision.
+  Review replacement progress impact and explicit scene remaps.
+- Never activate the mechanical draft module or bypass evidence/finalization.
 
-The sheet retains characteristics, HP/MP/SAN/Luck, SAN limits and daily loss,
-MOV, DB/Build, Dodge, skills, weapons, conditions, occupation/archetype,
-development pools, biography, sanity encounters, inventory/books, money,
-backstory, Mythos, and Pulp talents. Do not discard unknown campaign-approved
-fields during updates.
+## Development
 
-## Saves and Continuity
+Use development_query and development_settle in Lobby at an authorized
+session/scenario improvement boundary:
 
-```powershell
-sagasmith-coc save create --campaign <id> --label "<label>" --json
-sagasmith-coc save list --campaign <id> --json
-sagasmith-coc save verify --campaign <id> --slot <n> --json
-sagasmith-coc save lineage --campaign <id> --json
-sagasmith-coc save restore --campaign <id> --slot <n> --json
-sagasmith-coc memory search --campaign <id> --query "<question>" --limit 8 --json
-```
+- Query the current checked skills and eligibility.
+- Confirm the correct actor and current campaign/character revisions.
+- Settle once with a stable source description and idempotency key.
+- The runtime rolls each eligible checked skill, applies increases and first
+  mastery SAN where appropriate, clears all marks, and records the receipt.
+- Cthulhu Mythos is not an ordinary development check.
+- Do not invent Luck recovery, aging, Credit Rating changes, therapy, or Mythos
+  growth without a dedicated current mechanic/source workflow.
 
-Restore creates a new history branch and never overwrites old saves.
+## Continuity and recovery
 
-Use `save regenerate-recap`, `memory scope`, and `state undo`/`state redo` when
-needed. Undo affects audited mutations and does not delete immutable snapshots.
+- Use memory for objective durable facts, events for chronology, ActorKnowledge
+  for one actor's subjective state, and module progress for scoped discoveries.
+- Prefer memory_change(action="commit") when one accepted outcome creates an
+  event plus facts plus knowledge and an optional snapshot.
+- Snapshot meaningful boundaries. Fork alternatives from an explicit parent
+  snapshot and compare branches before explaining divergence.
+- Restore is non-destructive history. Verify the target, use current revision
+  and branch guards, restore, refresh tools, discard stale context, and reread
+  all authoritative state.
+- Undo/redo follows the branch revision ledger; it is not a substitute for an
+  immutable snapshot.
+
+For exact current facade actions and phases, read
+../../references/mcp-contract.md. For ordered setup, Pack, restore, and
+parallel-campaign procedures, read references/CAMPAIGN_MANAGER_DEEP_REFERENCE.md.

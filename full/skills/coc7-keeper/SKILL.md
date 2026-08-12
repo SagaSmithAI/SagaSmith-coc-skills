@@ -1,155 +1,129 @@
 ---
 name: coc7-keeper
-description: "Run Call of Cthulhu 7e investigations with rules-first d100, SAN, combat, chase, and clue adjudication."
+description: "Run source-bound Call of Cthulhu 7e investigations through SagaSmith MCP. Use for scene evidence, clues, d100 checks, combined rolls, group Luck, Push, SAN, wounds, combat, chases, NPC portrayal, audience-safe narration, continuity settlement, and scenario regression."
 ---
 
-# CoC 7e Keeper
+# Call of Cthulhu 7e Keeper
 
-## Mode Detection
+Use the sagasmith_coc MCP runtime. Do not emulate a successful roll, state
+change, clue settlement, SAN loss, combat action, chase action, or snapshot in
+prose, a CLI, or direct database access.
 
-First, detect which mode is available:
+## Start with authoritative state
 
-```powershell
-sagasmith-coc doctor --json 2>nul && set COC_MODE=runtime || set COC_MODE=portable
-if "%COC_MODE%"=="portable" python tools/portable.py doctor
-```
+1. Read this Skill and only the task-relevant reference.
+2. Read campaign_query, game_phase, branch_query(action="current"), current
+   module scene/progress, participating characters, and relevant continuity.
+3. Open or inspect the campaign-bound exposure. Search for the smallest useful
+   tool set, set it, refresh after tools/list_changed, and call native tools.
+4. Discard pre-restore, pre-checkout, or other-campaign assumptions.
 
-If `sagasmith-coc` is found → **Runtime mode** (full persistence, FTS5 search, vector store).
-If not → **Portable mode** (file-based, zero pip deps, Python stdlib only).
+## Route by phase and capability
 
-In Portable mode, locate `tools/portable.py` (in the skill repo root) and use it in place of `sagasmith-coc`.
+| Work | Search/add native tools | Read deeper |
+|---|---|---|
+| Scene and source evidence | module_query, continuity_context | references/SCENARIO_INDEX.md |
+| Investigation checks | investigation_query, investigation_check | references/INVESTIGATION.md |
+| Group Luck | group_luck_query, group_luck_check | references/INVESTIGATION.md |
+| Other source-explicit rolls | coc_resolve, coc_dice_roll | references/KEEPER_RULES.md |
+| SAN and HP | coc_sanity_check, coc_hp_change | references/SANITY.md |
+| Chase | chase_start, chase_query, chase_action, chase_end | references/COMBAT_CHASE.md |
+| Combat | combat_start, combat_query, combat_action, combat_attack, combat_end | references/COMBAT_CHASE.md |
+| Meaning and audience settlement | continuity_context, memory_change, campaign_event, actor_knowledge_change | ../../references/memory-ownership.md |
+| Scene progress | module_query, module_change | references/SCENARIO_INDEX.md |
+| Save/restore | snapshot_query/change, branch_query/change, state_revision | ../../references/workflows.md |
 
-## Session Startup
+## Run one investigation action
 
-```powershell
-# Runtime
-sagasmith-coc doctor --json
-sagasmith-coc campaign list --status active --json
-sagasmith-coc campaign show --campaign <id> --json
-```
+1. Identify the authenticated acting actor and scope. Read current scene evidence
+   and only knowledge legal for the intended audience.
+2. Ask for the player's method and goal. Do not infer intent from a skill name.
+3. Decide whether the source grants obvious information. If yes, do not roll;
+   settle the discovery/audience through continuity and scene progress.
+4. If uncertainty is meaningful, declare source, goal, difficulty,
+   bonus/penalty dice, and the ordinary failure consequence before opening a
+   check.
+5. Call investigation_check(action="open") with the latest campaign and
+   character revisions.
+6. Present the exact roll, outcome, and available actions. A human-controlled
+   investigator chooses whether to spend Luck or Push.
+7. For Luck, submit the exact chosen amount. Do not choose the player's resource
+   expenditure. For Push, require a changed or intensified approach and a
+   concrete source-consistent failure consequence before rerolling.
+8. Call settle only after the decision is complete. Successful eligible skills
+   are marked for development by the runtime.
+9. Use memory_change(action="commit") to record only the Agent-decided actual
+   event, objective facts, per-actor knowledge, optional snapshot, and audience.
+10. Update scoped scene progress separately when the scene state changes, then
+    narrate only the audience-safe consequence.
 
-```powershell
-# Portable
-python tools/portable.py doctor
-python tools/portable.py campaign list
-python tools/portable.py campaign get --campaign <id>
-```
+One actor may have at most one pending investigation check. Use
+investigation_query after interruption or restart. Abort is Keeper-only and
+requires an explicit reason; do not abort merely to obtain a different roll.
 
-Retain the selected campaign ID and ruleset.
+## Apply CoC check semantics
 
-Before play, read `references/KEEPER_RULES.md`. Load
-`references/INVESTIGATOR_CREATION.md` for creation or development and
-`references/KEEPER_TEMPLATES.md` when structured scene/state output is needed.
-Load `references/COMBAT_CHASE.md`, `references/SANITY.md`, or
-`references/INVESTIGATION.md` when that subsystem becomes active.
-Load `references/SCENARIO_INDEX.md` when importing, validating, or navigating a
-scenario, handout pack, or solo adventure.
+- A combined check rolls once against two to eight sheet traits. The Keeper must
+  explicitly choose requirement any or all from the source situation.
+- When multiple investigators attempt the same task, open independent checks
+  for each actor unless the rules/source specifically call for group Luck.
+  Never import a D&D majority-success group rule.
+- Group Luck uses the lowest current Luck among present participants. Query
+  candidates first; when lowest values tie, the Keeper explicitly selects one
+  candidate before the authoritative roll.
+- Ordinary opposed or specialized one-shot mechanics may use coc_resolve with
+  source-explicit inputs when no higher-level task tool owns the workflow.
+- Use coc_dice_roll only for a genuine raw campaign-stream roll that no dedicated
+  settlement tool owns.
+- Never spend Luck on a pushed roll, damage, SAN, weapon malfunction, or another
+  forbidden result. Let the system validator reject illegal requests.
 
-## Keeper Turn
+## Preserve the semantic boundary
 
-1. Resolve the acting scope (`party`, `group:<id>`, or `player:<id>`). Run `module current`
-   to get that scope's current scene; player scopes inherit the party scene until they diverge.
-2. Read only that scope's current scene and player-visible discoveries.
-3. Clarify investigator intent.
-4. Retrieve a rule when adjudication is uncertain.
-5. Roll d100 openly and resolve the success level.
-6. Apply SAN, combat, chase, or development through the CLI.
-7. Narrate consequences without revealing hidden scenario information.
-8. Merge clues, handouts, and triggers into that scope's existing progress.
-9. Record durable clues, relationships, events, and saves.
+- Standard CoC mechanics execute in sagasmith-coc/MCP.
+- The Agent decides perception, comprehension, who may respond, clue meaning,
+  pushed failure consequences, NPC behavior, unresolved geometry, and narration.
+- Module text is context, not an executable trigger language. Persist only the
+  branch actually realized.
+- Player intent, permission changes, tied group-Luck selection, and genuinely
+  missing/conflicting source evidence remain external boundaries.
+- Do not block for optional images, card polish, or facts the Keeper is
+  authorized to rule.
 
-## Command Reference
+## SAN, injury, Chase, and Combat
 
-Use the Runtime column when `sagasmith-coc` is available, Portable otherwise.
+- Use coc_sanity_check for one source-explicit SAN encounter. It owns the SAN
+  roll, loss expression, INT/bout consequences, random receipt, sheet update,
+  and revisions atomically.
+- Use coc_hp_change for non-combat damage/healing and combat_attack for attack
+  settlement. Never subtract HP only in narration.
+- Start Chase only from Play and only when Combat is inactive. Close it before
+  Combat. Query legal actions before each chase mutation.
+- Start Combat only from Play and only when Chase is inactive. Choose grid when
+  coordinates/geometry are authoritative or agent when the Keeper must rule
+  range, sight, obstruction, and friendly-fire risk from evidence.
+- combat_attack(open) creates a pending defense/response choice. Resolve or
+  abort it before stale scene/phase mutations. End Combat only through
+  combat_end, which returns to Play.
 
-### Rules and Scenario Retrieval
+## Audience-safe narration and NPCs
 
-| Runtime | Portable |
-|---------|----------|
-| `sagasmith-coc rules search --campaign <id> --query "<q>" --limit 5 --json` | `python tools/portable.py rules search --campaign <id> --query "<q>" --limit 5` |
-| `sagasmith-coc rules expand --chunk <id> --json` | (read the rule file directly) |
-| `sagasmith-coc module current --campaign <id> --scope <scope> --json` | `python tools/portable.py module current --campaign <id> --scope <scope>` |
-| `sagasmith-coc module search --campaign <id> --query "<s>" --limit 5 --json` | `python tools/portable.py module search --campaign <id> --query "<s>" --limit 5` |
-| `sagasmith-coc module read-scene --campaign <id> --scene <id> --json` | `python tools/portable.py module read-scene --campaign <id> --scene <id>` |
-| `sagasmith-coc module index --campaign <id> --json` | `python tools/portable.py module index --campaign <id>` |
-| `sagasmith-coc module ingest --campaign <id> --path <path> --json` | `python tools/portable.py module ingest --campaign <id> --path <path>` |
+Use continuity_context with the actual audience and actor/scope. Keep objective
+Keeper facts, actor knowledge, and public narration distinct. The current CoC
+MCP has no isolated multi-turn NPC conversation facade; portray NPCs as Agent
+judgment from legal context, never leak raw private context, and persist only
+actual published speech/events.
 
-Commercial rulebooks are not bundled. Cite the title and publication metadata
-returned from the user's imported sources.
+## End a scene or session
 
-### Mechanics
+1. Settle or Keeper-abort every pending investigation/attack choice.
+2. Close active Chase or Combat if the fiction has reached an outcome.
+3. Commit actual chronology, durable facts, actor knowledge, and scene progress.
+4. Snapshot meaningful revelations, dangerous choices, and chapter boundaries.
+5. Return to Lobby only when no pending check or active encounter remains.
+6. In Lobby, let the campaign manager run development_query/development_settle.
 
-| Runtime | Portable |
-|---------|----------|
-| `sagasmith-coc roll d100 --bonus-dice 1 --json` | `python tools/portable.py roll d100 --score <skill>` |
-| `sagasmith-coc check skill --threshold 65 --difficulty hard --json` | `python tools/portable.py roll d100 --score 65` |
-| `sagasmith-coc sanity loss --current-san 70 --san-max 99 --loss 5 --source "<horror>" --json` | Calculate SAN loss manually: `python tools/portable.py roll dice --expression "1d4"` |
-| `sagasmith-coc combat melee --threshold 60 ... --json` | `python tools/portable.py roll d100 --score 60` |
-| `sagasmith-coc combat ranged --threshold 55 ... --json` | `python tools/portable.py roll d100 --score 55` |
-| `sagasmith-coc development skill --json` | (update character sheet JSON directly) |
-
-Use `--pulp` only when the campaign profile enables Pulp rules.
-
-### Dice
-
-All modes:
-
-```
-python tools/portable.py roll d100 --score 65
-# → {"roll": 39, "score": 65, "level": "regular", "success": true}
-# Levels: critical (01) > extreme (≤score/5) > hard (≤score/2) > regular (≤score) > failure
-
-python tools/portable.py roll dice --expression "1D4"
-python tools/portable.py roll dice --expression "2D6+1"
-python tools/portable.py roll dice --expression "1D100"
-```
-
-### Persistence
-
-| Runtime | Portable |
-|---------|----------|
-| `sagasmith-coc event add --campaign <id> --type discovery --summary "<s>" --payload '<json>' --json` | `python tools/portable.py event add --campaign <id> --type discovery --summary "<s>" --payload '<json>'` |
-| `sagasmith-coc memory add --campaign <id> --type clue --subject "<s>" --content "<f>" --json` | `python tools/portable.py memory add --campaign <id> --type clue --subject "<s>" --content "<f>"` |
-| `sagasmith-coc save create --campaign <id> --label "<label>" --json` | `python tools/portable.py save create --campaign <id> --label "<label>"` |
-| (no CLI equivalent) | `python tools/portable.py save list --campaign <id>` |
-| (no CLI equivalent) | `python tools/portable.py save restore --campaign <id> --slot <slot>` |
-
-Record chronology in events and durable, branch-scoped facts in memory. Save
-before dangerous choices, bouts, major revelations, chapter transitions, and
-restores. Verify a snapshot before restore and refresh all state afterward.
-
-### Characters
-
-| Runtime | Portable |
-|---------|----------|
-| `sagasmith-coc investigator create --campaign <id> --name "<name>" --occupation "<occ>" ... --json` | `python tools/portable.py character create --campaign <id> --name "<name>" --sheet '<json>'` |
-| `sagasmith-coc investigator list --campaign <id> --json` | `python tools/portable.py character list --campaign <id>` |
-
-## Portable Mode Data
-
-Data lives in `~/.sagasmith/`:
-
-```
-~/.sagasmith/
-  campaigns.json                       # campaign index
-  <campaign_id>/
-    campaign.json                      # metadata
-    characters/<name>.json             # investigator sheets
-    modules/<source_key>.md            # imported scenarios (Markdown)
-    progress.json                      # scoped scene progress
-    events.jsonl                       # event log
-    memories.jsonl                     # campaign memory
-    saves/<slot>/                      # snapshot copies
-```
-
-Progress merges state per-scope (`party`, `group:<id>`, `player:<id>`).
-Save snapshots copy the campaign directory.
-
-## Portable Mode Limitations
-
-- No SQL FTS5 — search uses Python lexical scoring with Chinese ↔ English expansion
-- No ChromaDB vector search
-- No PDF import — convert PDF to Markdown first, then `module ingest`
-- No `sanity loss` / `combat melee` / `opposed check` — roll d100 manually and apply rules
-- No commercial rulebook search — only bundled SRD files are searchable
-- No transaction atomicity — file writes use atomic rename for individual file safety
+Read references/KEEPER_RULES.md for current mechanic ownership,
+references/INVESTIGATION.md for the recoverable check protocol,
+references/SANITY.md for SAN boundaries, and references/COMBAT_CHASE.md for
+authoritative encounter workflows.

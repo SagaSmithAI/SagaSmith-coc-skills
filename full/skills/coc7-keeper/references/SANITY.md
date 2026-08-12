@@ -1,16 +1,39 @@
-# 理智、疯狂与 Mythos
+# SAN and insanity settlement
 
-SAN 上限始终为 `99 - Cthulhu Mythos`。角色卡同时保存当前 SAN、上限、当日损失、
-当日阈值、既有疯狂状态与按来源累计的理智遭遇。
+Use coc_sanity_check for one source-explicit SAN encounter. Do not subtract SAN
+in prose or replace the dedicated transaction with a raw d100.
 
-## 结算顺序
+## Required inputs
 
-1. 先进行 SAN 检定并根据成功/失败选择对应损失表达式。
-2. 通过 CLI 掷损失并调用 `sanity loss`，不得只在叙事中扣除。
-3. 单次实际损失达到 5 时进行 INT 检定；理解恐怖才触发临时疯狂。
-4. 当日累计达到会话开始 SAN 的五分之一时触发不定期疯狂。
-5. SAN 归零进入永久疯狂；同时更新条件、事件和角色卡。
-6. 若触发狂乱发作，区分实时与总结模式，记录持续时间、恐惧/狂躁和背景改变。
+- actor_id and current character revision;
+- current campaign revision;
+- exact success_loss and failure_loss expressions from source;
+- concise trigger/source description;
+- context real_time or summary;
+- stable exact-request idempotency key.
 
-同一恐怖来源的损失与免疫要保存在 `sanity_loss_events`。恢复 SAN、心理治疗、
-幕间成长和 Mythos 增长都必须重新计算上限。Pulp 的幸运减免只有战役规则开启时可用。
+The tool owns the SAN roll, selected loss expression, loss roll, sheet update,
+SAN maximum invariant, daily loss tracking, applicable INT check/bout state,
+campaign random receipt, and revisions as one transaction.
+
+## Agent responsibilities
+
+- Decide whether the source trigger is actually perceived and understood by
+  this actor.
+- Do not call the mechanic for an actor who did not encounter the trigger.
+- Use real_time for an immediate scene encounter and summary only when the
+  source/workflow calls for summarized resolution.
+- Narrate symptoms and behavior from the returned mechanical state, current
+  source, player agency, and audience.
+- Record actual chronology and per-actor knowledge without exposing another
+  actor's private bout or Keeper truth.
+
+## Recovery and boundaries
+
+After interruption, reread the actor and revision history before retrying; exact
+idempotency replays the same settlement. Do not create a second encounter to
+repair missing narration.
+
+The current MCP does not provide granular therapy, aging, Luck recovery, Mythos
+study, or long-term institution workflows. Keep them source-bound and do not
+claim atomic engine support until a dedicated mechanic exists.
