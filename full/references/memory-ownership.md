@@ -100,9 +100,10 @@ same scene; the Agent decides perception, hearing, language, and comprehension.
 
 Module-authored secrets remain possibilities until a branch realizes them.
 Initial knowers identify authored NPC context, not player knowledge. Open an
-isolated npc_conversation for persistent NPC portrayal. The host-local worker
-receives only its server-built private capsule and activation reference; the
-Director receives only the server-derived publication. Close commits the
+isolated npc_conversation for persistent NPC portrayal. The Host-private,
+authenticated dispatcher receives only its server-built private capsule and
+activation reference; the Director receives only the server-derived
+publication. Close commits the
 approved public transcript and accepted durable deltas, while abort discards
 the private draft.
 

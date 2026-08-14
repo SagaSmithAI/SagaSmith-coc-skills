@@ -31,7 +31,7 @@ prose, a CLI, or direct database access.
 | Chase | chase_start, chase_query, chase_action, chase_end | references/COMBAT_CHASE.md |
 | Combat | combat_start, combat_query, combat_action, combat_attack, combat_end | references/COMBAT_CHASE.md |
 | Meaning and audience settlement | continuity_context, memory_change, campaign_event, actor_knowledge_change | ../../references/memory-ownership.md |
-| Sustained NPC dialogue | npc_conversation; host-local npc_conversation_worker | references/KEEPER_RULES.md |
+| Sustained NPC dialogue | public npc_conversation; Host-private unlisted transport | references/KEEPER_RULES.md |
 | Scene progress | module_query, module_change | references/SCENARIO_INDEX.md |
 | Save/restore | snapshot_query/change, branch_query/change, state_revision | ../../references/workflows.md |
 
@@ -113,8 +113,8 @@ requires an explicit reason; do not abort merely to obtain a different roll.
 Use continuity_context with the actual audience and actor/scope. Keep objective
 Keeper facts, actor knowledge, and public narration distinct. For a sustained
 conversation, open npc_conversation with all participants, submit explicit
-Agent rulings for who perceived, understood, and may respond, and dispatch only
-activation refs through the host-local worker transport. Relay only the
+Agent rulings for who perceived, understood, and may respond, and let the Host
+dispatch only activation refs through its authenticated unlisted transport. Relay only the
 server-derived publication. Resolve requested mechanics through public tools,
 publish with fresh audience facts, then close to settle the public transcript
 and selected durable deltas. Abort to discard an uncommitted conversation.

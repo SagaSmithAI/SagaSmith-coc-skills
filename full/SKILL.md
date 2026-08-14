@@ -81,8 +81,9 @@ through this MCP's module_draft and content_pack tools.
   Never expose Keeper scenes, other actors' private knowledge, raw continuity
   context, or secret Pack fields.
 - For sustained NPC dialogue, use npc_conversation with explicit Agent-resolved
-  audience facts. Keep npc_conversation_worker host-local, never relay private
-  capsules or raw proposals, and close or abort before phase/encounter changes.
+  audience facts. The authenticated Host owns a private, unlisted transport;
+  never relay private capsules or raw proposals, and close or abort before
+  phase/encounter changes.
 - Use signed continuity_context bundles plus bounded_evaluation for tool-free
   actor, faction, source, ruling, or audience proposals. Validation never writes
   state and actor_turn must never replace a human investigator choice.

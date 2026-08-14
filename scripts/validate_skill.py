@@ -70,7 +70,6 @@ TOOLS = {
     "module_draft",
     "module_query",
     "npc_conversation",
-    "npc_conversation_worker",
     "rule_query",
     "rulebook_draft",
     "server_capabilities",
@@ -164,8 +163,8 @@ def main() -> None:
     missing_tools = sorted(tool for tool in TOOLS if tool not in contract)
     if missing_tools:
         fail("MCP contract missing tools: " + ", ".join(missing_tools))
-    if len(TOOLS) != 51:
-        fail("validator tool catalog must contain exactly 51 tools")
+    if len(TOOLS) != 50:
+        fail("validator public tool catalog must contain exactly 50 tools")
 
     metadata = list((root / "full").rglob("agents/openai.yaml"))
     if len(metadata) != 3:

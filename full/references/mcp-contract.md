@@ -22,7 +22,7 @@ search/set only campaign_change. After creation, open a new exposure bound to th
 campaign. On a phase change, restore, branch checkout, undo, or redo, consume
 tools/list_changed, refresh schemas, and use search/set for the next phase.
 
-## Complete 51-tool inventory
+## Complete public tool inventory
 
 The server exposes exactly these public tool identities:
 
@@ -43,7 +43,7 @@ investigation_check     investigation_query
 inventory_change        long_term_change
 memory_change           memory_query
 module_change           module_draft           module_query
-npc_conversation        npc_conversation_worker
+npc_conversation
 rule_query              rulebook_draft
 server_capabilities     skill_query
 snapshot_change         snapshot_query         state_revision
@@ -84,16 +84,16 @@ chase_end chase_query chase_start coc_dice_roll coc_hp_change coc_resolve
 coc_sanity_check combat_start continuity_context group_luck_check
 group_luck_query investigation_check investigation_query inventory_change
 memory_change memory_query module_change module_query npc_conversation
-npc_conversation_worker rule_query snapshot_change snapshot_query
+rule_query snapshot_change snapshot_query
 state_revision wallet_change
 ~~~
 
 DM/owner authorization is required for actor_knowledge_change, branch_change,
 campaign_change, campaign_event, chase_end, chase_start, combat_start,
 group_luck_check, group_luck_query, memory_change, memory_query, module_change,
-npc_conversation, npc_conversation_worker, snapshot_change, snapshot_query, and
-state_revision. Player calls remain limited by campaign membership and actor
-control. npc_conversation_worker is additionally local-only.
+npc_conversation, snapshot_change, snapshot_query, and state_revision. Player
+calls remain limited by campaign membership and actor control. The authenticated
+Host transport is private and never appears in `tools/list`.
 
 ### Combat
 
@@ -114,7 +114,7 @@ checks still apply to other tools.
 
 | Tool | Current actions or kinds |
 |---|---|
-| campaign_change | create, set_phase, grant_campaign, grant_actor |
+| campaign_change | create, set_phase, grant_campaign, revoke_campaign, grant_actor |
 | campaign_query | list, get |
 | character_query / character_change | list/get; create/instantiate/update |
 | inventory_change | add, update, remove, consume |
@@ -142,7 +142,6 @@ checks still apply to other tools.
 | combat_action | join, move, end_turn |
 | combat_attack | open, resolve, abort |
 | npc_conversation | open, list, get, ingest, publish, close, abort |
-| npc_conversation_worker | claim_activation, submit_proposal, cancel_activation |
 | bounded_evaluation | validate |
 | exposure | open, get, search, set |
 | skill_query | list, read |
@@ -153,11 +152,12 @@ Pack calls. Finalize a CoC draft with data.package_id.
 
 character_change(action="instantiate") is a Keeper-only Lobby operation for a
 Pack actor bound as preset_pc. Pass the library character id returned in
-content_pack import actor_map as data.template_id; data.name and
-data.player_name are optional overrides. The server validates the stored CoC
-investigator sheet, creates a campaign-local copy, and grants the Keeper actor
-control. Grant the resulting actor to its player explicitly with
-campaign_change(action="grant_actor").
+content_pack import actor_map as data.template_id, plus
+data.expected_campaign_revision and data.idempotency_key; data.name and
+data.player_name are optional overrides. Create and instantiate atomically
+commit the actor, its initial grant, replay receipt, and lifecycle revision.
+Update requires data.expected_revision and data.idempotency_key. Grant the
+resulting actor to its player explicitly with campaign_change(action="grant_actor").
 
 ## Revision and idempotency rules
 
@@ -246,8 +246,9 @@ deciding whether the semantic commit is still missing.
 - npc_conversation is the public Keeper facade. The Agent supplies explicit
   perception, comprehension, and response facts; each NPC runs from a durable
   private capsule. Only server-derived publications leave that capsule.
-- npc_conversation_worker is host-local transport. Never expose it to a remote
-  principal or copy private bootstrap/proposal data into Director context.
+- `npc_conversation_transport` is an authenticated Host-private transport and
+  is never listed or exposed to the Director. Never copy private
+  bootstrap/proposal data into Director context.
 - Close a conversation only after all activations, publications, and requested
   mechanics are settled. Close commits the public transcript and explicitly
   accepted working deltas; abort discards the draft. Active conversations block
