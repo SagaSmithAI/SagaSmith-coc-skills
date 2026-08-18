@@ -9,6 +9,14 @@ Use the sagasmith_coc MCP runtime. Do not emulate a successful roll, state
 change, clue settlement, SAN loss, combat action, chase action, or snapshot in
 prose, a CLI, or direct database access.
 
+When the Host exposes `submit_room_turn`, also load and follow the system-neutral
+`room-host` Skill. Present an opened investigation as one referenced resolution
+thread. Luck spending, Push, tied group-Luck selection, defense, and other
+pending choices end with a `prompt`; never portray them as chosen. Separate
+objective Keeper facts, public consequences, and investigator-private
+perception into different audience messages. The existence of a silent secret
+check is itself private and must not produce a player-facing block.
+
 ## Start with authoritative state
 
 1. Read this Skill and only the task-relevant reference.

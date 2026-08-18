@@ -25,7 +25,7 @@ pip install -e ..\sagasmith-coc
 pip install -e ..\SagaSmith-coc-mcp
 ~~~
 
-配置并启动 sagasmith-coc-mcp，再把 full/ 和
+配置并启动 sagasmith-coc-mcp，再把 full/skills 和
 SagaSmith-module-gen-skills 作为 Skill 根目录提供给 Host。Host 必须支持
 tools/list_changed 后刷新原生 schema；不支持动态工具列表的 Host 不能运行
 Full Runtime。
