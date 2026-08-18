@@ -1,6 +1,6 @@
 # SagaSmith CoC 7e Skills
 
-[中文](README.md) · [English](README-en.md)
+[中文](README.md) · [English](README-en.md) · [官网](https://sagasmithai.github.io) · [平台总览](https://github.com/SagaSmithAI/.github/blob/main/profile/README.md) · [托管服务](https://github.com/SagaSmithAI/SagaSmith-service) · [内容目录](https://github.com/SagaSmithAI/SagaSmith-dnd-content-library)
 
 面向 SagaSmith Call of Cthulhu 7e 的 Agent Skills。Full Runtime 使用
 sagasmith-coc-mcp 的原生动态工具，覆盖调查、线索、Luck/Push、SAN、伤害、
