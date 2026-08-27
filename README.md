@@ -1,5 +1,10 @@
 # SagaSmith CoC 7e Skills
 
+> [!IMPORTANT]
+> **本仓库已归档。** 它不再是发布输入、兼容回退或新 issue 的接收位置。当前 Skills 位于 [Sagasmith-coc/skills](https://github.com/SagaSmithAI/Sagasmith-coc/tree/main/skills)。
+>
+> **This repository is archived.** It is no longer a release input, compatibility fallback, or destination for new issues. Current Skills live in [Sagasmith-coc/skills](https://github.com/SagaSmithAI/Sagasmith-coc/tree/main/skills).
+
 [中文](README.md) · [English](README-en.md) · [官网](https://sagasmithai.github.io) · [平台总览](https://github.com/SagaSmithAI/.github/blob/main/profile/README.md) · [托管服务](https://github.com/SagaSmithAI/SagaSmith-service) · [内容目录](https://github.com/SagaSmithAI/SagaSmith-dnd-content-library)
 
 面向 SagaSmith Call of Cthulhu 7e 的 Agent Skills。Full Runtime 使用
